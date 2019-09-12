@@ -91,7 +91,7 @@ export class TargetSpawner {
 
   inner_update(l: Labyrinth, i: number, target: Target, stateHolder: SpawnerState, heroPos: Pos, dp: Pos): [boolean, Pos | null] {
     const [hit, power] = l.hits_projectile(target.pos);
-    const lang = l.personalInfo.lang;
+    const lang = 'fr';
 
     if (hit !== -1) {
       l.projectile2item(l.currentMapData, target.pos, hit);

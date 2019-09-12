@@ -12,11 +12,11 @@ export const OverlaySelected =  '#FF00FF';
 /*
  * Map
  */
-export const globalTile2color = {
-  '#': '#646464',
-  '.': '#646464',
-  '~': '#C8C8C8',
-};
+export const globalTile2color = new Map<string, string>([
+  ['#', '#646464'],
+  ['.', '#646464'],
+  ['~', '#C8C8C8'],
+]);
 
 export const teleportSymbols: Array<string> = [ '1', '2', '3', '4', '5', '6', '7', '8', '9', '0', '>', '<' ];
 export const itemSymbols: Array<string> = [ '*', '$', '/', '\\' ];
@@ -26,30 +26,30 @@ export const obstacleSymbols: Array<string> = [ 'x' ];
 /*
  * PNJ
  */
-export const pnj2color = {
-  t: '#6699FF',
-  '@': '#FF0000',
-};
+export const pnj2color = new Map<string, string>([
+  ['t', '#6699FF'],
+  ['@', '#FF0000'],
+]);
 
 /*
  * Items
  */
-export const item2color = {
-  $: '#FFFF00',
-  '=': '#FF0000',
-  '*': '#dd99FF',
-  '%': '#119900',
-  '/': '#999999',
-  '\\': '#FFFFFF',
-};
+export const item2color = new Map<string, string>([
+  ['$', '#FFFF00'],
+  ['=', '#FF0000'],
+  ['*', '#dd99FF'],
+  ['%', '#119900'],
+  ['/', '#999999'],
+  ['\\', '#FFFFFF'],
+]);
 
 export const weaponItems = [ '/', '\\' ];
 export const throwableItems = [ '*' ];
 
-export const projectile2color = {
-  '*': '#999999',
-  '&': '#FF0000',
-};
+export const projectile2color = new Map<string, string>([
+  ['*', '#999999'],
+  ['&', '#FF0000'],
+]);
 
 export const weapon2damage = new Map<string, number>([
   ['/', 1],

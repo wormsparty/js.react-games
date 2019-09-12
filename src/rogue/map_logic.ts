@@ -66,7 +66,7 @@ export class LevelMap {
   meta: string;
   teleportMap: Map<string, string>;
   tile2color: Map<string, string>;
-  texts: {};
+  texts: Map<string, Map<string, Pos>>;
   teleports: Map<string, Array<TeleportPos>>;
   teleportCount: Map<string, number>;
   obstacles: Map<string, Array<Pos>>;
@@ -76,10 +76,10 @@ export class LevelMap {
   backgroundColor: string;
   textColor: string;
   targetSpawner: TargetSpawner | null;
-  obstacleVisible: ((laby: Labyrinth, str: string) => boolean) | null;
+  obstacleVisible: ((laby: Labyrinth, str: string) => boolean) = () => false;
 
   constructor(map: string, meta: string, teleportMap: Map<string, string>,
-              tile2color: Map<string, string>, texts: {}, background: string,
+              tile2color: Map<string, string>, texts: Map<string, Map<string, Pos>>, background: string,
               textColor: string, targetSpawner: TargetSpawner | null,
               obstacleVisible: ((laby: Labyrinth, str: string) => boolean) | null, obstacleColor: string) {
     this.map = map;
@@ -93,7 +93,10 @@ export class LevelMap {
     this.start = new Pos(0, 0);
     this.targetSpawner = targetSpawner;
     this.obstacles = new Map<string, Array<Pos>>();
-    this.obstacleVisible = obstacleVisible;
+
+    if (obstacleVisible != null) {
+      this.obstacleVisible = obstacleVisible;
+    }
 
     if (background !== undefined) {
       this.backgroundColor = background;
@@ -101,7 +104,7 @@ export class LevelMap {
       this.backgroundColor = consts.DefaultBackgroundColor;
     }
 
-    if (textColor !== undefined) {
+    if (textColor !== '') {
       this.textColor = textColor;
     } else {
       this.textColor = consts.DefaultTextColor;

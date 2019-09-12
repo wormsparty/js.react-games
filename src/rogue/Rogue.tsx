@@ -11,23 +11,15 @@ interface RogueProps {
 }
 
 class Rogue extends React.Component<RogueProps> {
-    private labyrinth: Labyrinth;
+    private labyrinth: Labyrinth | null = null;
 
-    constructor(props: Readonly<RogueProps>) {
-        super(props);
-        document.body.style.overflow = 'hidden';
-
+    componentDidMount() {
         const labyrinth = new Labyrinth();
         this.labyrinth = labyrinth;
         this.labyrinth.resize(window.innerWidth, window.innerHeight);
 
         window.addEventListener('resize', this.onResize);
-
-        setInterval(() => {
-            if (labyrinth.persistedData !== undefined && labyrinth.persistedData.isRt) {
-                this.doUpdate();
-            }
-        }, 1000 / labyrinth.fps);
+        window.addEventListener('keydown', this.onKeydown);
 
         const font = new FontFaceObserver('Inconsolata');
 
@@ -36,7 +28,16 @@ class Rogue extends React.Component<RogueProps> {
         });
     }
 
-    doUpdate() {
+    constructor(props: Readonly<RogueProps>) {
+        super(props);
+        document.body.style.overflow = 'hidden';
+    }
+
+    doUpdate = () => {
+        if (this.labyrinth == null) {
+            return;
+        }
+
         this.labyrinth.do_update();
         this.labyrinth.draw();
 
@@ -45,11 +46,19 @@ class Rogue extends React.Component<RogueProps> {
         }
     }
 
-    onResize() {
+    onResize = () => {
+        if (this.labyrinth == null) {
+            return;
+        }
+
         this.labyrinth.resize(window.innerWidth, window.innerHeight);
     }
 
-    onKeydown(event: React.KeyboardEvent<HTMLDivElement>) {
+    onKeydown = (event: KeyboardEvent) => {
+        if (this.labyrinth == null) {
+            return;
+        }
+
         let update = false;
 
         if (this.labyrinth.pressed.has(event.key)) {
@@ -74,14 +83,14 @@ class Rogue extends React.Component<RogueProps> {
             }
         }
 
-        if (update && (this.labyrinth.persistedData === undefined || !this.labyrinth.persistedData.isRt)) {
+        if (update) {
             this.doUpdate();
         }
-    }
+    };
 
     render() {
         return (
-            <div id='canvasContainer' onKeyDown={this.onKeydown}>
+            <div id='canvasContainer'>
                 <canvas id='canvas'>
                     Your browser doesn't seem to support HTML5. Please upgrade your browser.
                 </canvas>

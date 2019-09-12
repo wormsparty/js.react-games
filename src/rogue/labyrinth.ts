@@ -2,7 +2,7 @@
 import {AllMaps} from './map_content';
 import * as consts from './const';
 import * as translations from './translations';
-import {LevelMap, Pos, ObjPos, ProjPos, TeleportPos} from './map_logic';
+import {LevelMap, Pos, ObjPos, ProjPos} from './map_logic';
 import {item2color} from './const';
 import {SpawnerState} from './target';
 
@@ -132,7 +132,6 @@ class PersistedData {
   heroPosition: Pos = new Pos(0, 0);
   mapData: Map<string, PersistedMapData> = new Map<string, PersistedMapData>();
   currentMapName: string = '';
-  isRt: boolean = false;
 
   static parse(json: any): PersistedData | null {
     if (json === null) {
@@ -150,7 +149,6 @@ class PersistedData {
     p.coins = json.coins;
     p.heroPosition = new Pos(json.heroPosition.x, json.heroPosition.y);
     p.mapData = new Map<string, PersistedMapData>();
-    p.isRt = json.isRt;
 
     for (const map in json.mapData) {
       if (json.mapData.hasOwnProperty(map)) {
@@ -170,13 +168,12 @@ class PersistedData {
       weapon: this.weapon,
       rocks: this.rocks,
       coins: this.coins,
-      hero_position: {
+      heroPosition: {
         x: this.heroPosition.x,
         y: this.heroPosition.y
       },
       map_data: {},
       current_map_name: this.currentMapName,
-      is_rt: this.isRt,
     };
 
     for (const [i, data] of this.mapData) {
@@ -192,7 +189,6 @@ class PersistedData {
     cpy.rocks = this.rocks;
     cpy.coins = this.coins;
     cpy.heroPosition = this.heroPosition.copy();
-    cpy.isRt = this.isRt;
 
     cpy.mapData = new Map<string, PersistedMapData>();
 
@@ -260,7 +256,7 @@ export class Labyrinth {
   static get_from_storage(): PersistedData | null {
     const saveData = window.localStorage.getItem('save');
 
-    if (saveData === null) {
+    if (saveData == null) {
       return null;
     }
 
@@ -279,14 +275,6 @@ export class Labyrinth {
   static clear_and_start_tt(l: Labyrinth): void {
     if (l.initialPersistedData != null) {
       const newSave = l.initialPersistedData.copy();
-      newSave.isRt = false;
-      Labyrinth.load_save(l, newSave);
-    }
-  }
-  static clear_and_start_rt(l: Labyrinth): void {
-    if (l.initialPersistedData != null) {
-      const newSave = l.initialPersistedData.copy();
-      newSave.isRt = true;
       Labyrinth.load_save(l, newSave);
     }
   }
@@ -468,11 +456,11 @@ export class Labyrinth {
 
     return false;
   }
-  try_enter_or_exit(heroPos: TeleportPos): [boolean, Pos | null, string] {
+  try_enter_or_exit(heroPos: Pos): [boolean, Pos, string] {
     const symbol = this.get_symbol_at(heroPos);
 
     if (symbol !== '>' && symbol !== '<') {
-      return [false, null, ''];
+      return [false, new Pos(0, 0), ''];
     }
 
     return this.do_teleport(symbol, heroPos, heroPos, heroPos);
@@ -500,6 +488,10 @@ export class Labyrinth {
 
   }
   collides_with_obstacle(heroPos: Pos): boolean {
+    if (this.currentMap == null) {
+      return false;
+    }
+
     if (this.currentMap.obstacleVisible === undefined) {
       return false;
     }
@@ -545,7 +537,7 @@ export class Labyrinth {
 
     let symbol = this.get_symbol_at(futurePos);
 
-    if (allowedWalkingSymbols.indexOf(symbol) > -1) {
+    if (allowedWalkingSymbols.indexOf(symbol) > -1 || this.currentMap == null) {
       return [futurePos, futurePos, ''];
     }
 
@@ -580,7 +572,7 @@ export class Labyrinth {
     this.persistedData.currentMapName = mapName;
     this.currentMapData = this.persistedData.mapData.get(mapName)!;
 
-    if (resetTargets) {
+    if (resetTargets && this.currentMapData.spawner != null) {
       this.currentMapData.spawner.reset();
     }
   }
@@ -588,29 +580,38 @@ export class Labyrinth {
     this.lastSave = this.persistedData.copy();
   }
   load_last_save() {
-    this.persistedData = this.lastSave.copy();
+    if (this.lastSave != null) {
+      this.persistedData = this.lastSave.copy();
+    }
+
     this.change_map(this.persistedData.currentMapName, false);
   }
-  try_teleport(heroPos: Pos, futurePos: Pos): [boolean, Pos | undefined, string | undefined] {
-    for (const [chr, teleportsForChar] of this.currentMap.teleports) {
-      if (chr === '<' || chr === '>') { // These are treated separately
-        continue;
-      }
+  try_teleport(heroPos: Pos, futurePos: Pos): [boolean, Pos, string] {
+    if (this.currentMap != null) {
+      for (const [chr, teleportsForChar] of this.currentMap.teleports) {
+        if (chr === '<' || chr === '>') { // These are treated separately
+          continue;
+        }
 
-      for (const pos of teleportsForChar) {
-        if (pos.equals(futurePos)) {
-          return this.do_teleport(chr, pos, heroPos, futurePos);
+        for (const pos of teleportsForChar) {
+          if (pos.equals(futurePos)) {
+            return this.do_teleport(chr, pos, heroPos, futurePos);
+          }
         }
       }
     }
 
     return [
       false,
-      undefined,
-      undefined,
+      new Pos(0, 0),
+      '',
     ];
   }
-  do_teleport(chr: string, pos: TeleportPos, heroPos: Pos, futurePos: Pos): [boolean, Pos, string] {
+  do_teleport(chr: string, pos: Pos, heroPos: Pos, futurePos: Pos): [boolean, Pos, string] {
+    if (this.currentMap == null) {
+      return [ false, new Pos(0, 0), ''];
+    }
+
     const newMapName = this.currentMap.teleportMap.get(chr)!;
     const newMap = AllMaps.get(newMapName)!;
     let teleportsOfOtherMap;
@@ -623,8 +624,9 @@ export class Labyrinth {
       teleportsOfOtherMap = newMap.teleports.get('>')!;
       id = 0;
     } else {
+      // Impossible for now AFAIK
       teleportsOfOtherMap = newMap.teleports.get(chr)!;
-      id = pos.id;
+      id = 0;//pos.id;
     }
 
     const tp = teleportsOfOtherMap[id];
@@ -648,7 +650,7 @@ export class Labyrinth {
     ];
   }
   try_hit_target(heroPos: Pos, aimPos: Pos): [string, string] {
-    if (this.currentMap.targetSpawner === null) {
+    if (this.currentMap == null || this.currentMapData.spawner == null || this.currentMap.targetSpawner === null) {
       return [ '', '' ];
     }
 
@@ -680,13 +682,17 @@ export class Labyrinth {
     return [ '', '' ];
   }
   update_targets(heroPos: Pos): Pos {
-    if (this.currentMap.targetSpawner !== undefined) {
+    if (this.currentMap != null && this.currentMap.targetSpawner != null && this.currentMapData != null && this.currentMapData.spawner != null) {
       return this.currentMap.targetSpawner.update(this, this.currentMapData.spawner, heroPos);
     }
 
     return heroPos;
   }
   move_projectiles() {
+    if (this.currentMap == null) {
+      return;
+    }
+
     for (let i = 0; i < this.currentMapData.projectiles.length;) {
       const proj = this.currentMapData.projectiles[i];
 
@@ -699,7 +705,7 @@ export class Labyrinth {
         const [canTeleport, where, mapName] = this.try_teleport(proj, proj);
 
         if (canTeleport) {
-          const mapData = this.persistedData.mapData.get(mapName);
+          const mapData = this.persistedData.mapData.get(mapName)!;
           this.projectile2item(mapData, new Pos(where.x + proj.vx, where.y + proj.vy), i);
           continue;
         }
@@ -721,11 +727,11 @@ export class Labyrinth {
   }
   move_targets_or_die(heroPos: Pos) {
     heroPos = this.update_targets(heroPos);
-    const lang = this.personalInfo.lang;
+    const lang = 'fr';
     const symbol = this.get_symbol_at(heroPos);
 
     if (consts.walkableSymbols.indexOf(symbol) === -1) {
-      this.gameOverMessage = translations.symbol2gameover[lang][symbol];
+      this.gameOverMessage = translations.symbol2gameover.get(lang)!.get(symbol)!;
     } else {
       this.persistedData.heroPosition = heroPos;
     }
@@ -809,7 +815,7 @@ export class Labyrinth {
     }
 
     const futurePos = this.get_future_position(this.persistedData.heroPosition);
-    const lang = this.personalInfo.lang;
+    const lang = 'fr';
 
     const ret = this.try_enter_or_exit(futurePos[0]);
 
@@ -830,9 +836,9 @@ export class Labyrinth {
 
     if (this.isThrowing) {
       if (this.persistedData.rocks > 0) {
-        const item = translations.item2description[lang]['*'];
+        const item = translations.item2description.get(lang)!.get('*')!;
 
-        this.currentStatus = '> ' + make_first_letter_upper(item.text + translations.lance[lang][item.genre]);
+        this.currentStatus = '> ' + make_first_letter_upper(item.text + translations.lance.get(lang)!.get(item.genre)!);
 
         // TODO: REFACTOR
         const x = this.persistedData.heroPosition.x;
@@ -878,6 +884,10 @@ export class Labyrinth {
     }
   }
   draw_map() {
+    if (this.currentMap == null) {
+      return;
+    }
+
     for (let y = 0; y < consts.mapLines; y++) {
       for (let x = 0; x < consts.charPerLine;) {
         let length = 0;
@@ -907,7 +917,7 @@ export class Labyrinth {
         }
 
         if (color === undefined) {
-          color = consts.globalTile2color[val];
+          color = consts.globalTile2color.get(val);
         }
 
         if (color === undefined) {
@@ -921,27 +931,28 @@ export class Labyrinth {
     }
 
     if (this.currentMap.texts !== undefined) {
-      const lang = this.personalInfo.lang;
-      const texts = this.currentMap.texts[lang];
+      const lang = 'fr';
+      const texts = this.currentMap.texts.get(lang)!;
 
-      for (const key in texts) {
-        if (texts.hasOwnProperty(key)) {
-          const pos = texts[key];
+      if (texts !== undefined) {
+        for (const [key, pos] of texts) {
           this.engine.text(key, this.to_screen_coord(pos.x, pos.y), this.currentMap.textColor);
         }
       }
     }
   }
   draw_projectiles() {
-    for (const proj of this.currentMapData.projectiles) {
-      const coord = this.to_screen_coord(proj.x, proj.y + consts.headerSize);
+    if (this.currentMap != null) {
+      for (const proj of this.currentMapData.projectiles) {
+        const coord = this.to_screen_coord(proj.x, proj.y + consts.headerSize);
 
-      this.engine.rect(coord, this.charWidth, 16, this.currentMap.backgroundColor);
-      this.engine.text(proj.symbol, coord, consts.projectile2color[proj.symbol]);
+        this.engine.rect(coord, this.charWidth, 16, this.currentMap.backgroundColor);
+        this.engine.text(proj.symbol, coord, consts.projectile2color.get(proj.symbol)!);
+      }
     }
   }
   draw_targets() {
-    if (this.currentMap.targetSpawner !== undefined) {
+    if (this.currentMap != null && this.currentMap.targetSpawner != null && this.currentMapData.spawner != null) {
       for (const target of this.currentMapData.spawner.targets) {
         const coord = this.to_screen_coord(target.pos.x, target.pos.y + consts.headerSize);
 
@@ -951,7 +962,7 @@ export class Labyrinth {
     }
   }
   draw_obstacles() {
-    if (this.currentMap.obstacleVisible === undefined) {
+    if (this.currentMap == null) {
       return false;
     }
 
@@ -966,20 +977,25 @@ export class Labyrinth {
     }
   }
   draw_character(chr: string, coord: Pos, color: string) {
+    if (this.currentMap == null) {
+      return;
+    }
     this.engine.rect(coord, this.charWidth, 16, this.currentMap.backgroundColor);
     this.engine.text(chr, coord, color);
   }
   draw_hero() {
     this.draw_character('@',
       this.to_screen_coord(this.persistedData.heroPosition.x, this.persistedData.heroPosition.y + consts.headerSize),
-      consts.pnj2color['@']);
+      consts.pnj2color.get('@')!);
   }
   draw_items() {
+    if (this.currentMap == null) {
+      return;
+    }
     for (const [item, positions] of this.currentMapData.items) {
-
       for (const pos of positions) {
         const coord = this.to_screen_coord(pos.x, pos.y + consts.headerSize);
-        const color = consts.item2color[item];
+        const color = consts.item2color.get(item)!;
 
         this.engine.rect(coord, this.charWidth, 16, this.currentMap.backgroundColor);
         this.engine.text(item, coord, color);
@@ -990,6 +1006,9 @@ export class Labyrinth {
     return consts.weapon2damage.get(this.persistedData.weapon)!;
   }
   get_symbol_at(pos: Pos): string {
+    if (this.currentMap == null) {
+      return '';
+    }
     return this.currentMap.get_symbol_at(pos.x, pos.y);
   }
   hits_projectile(pos: Pos): [number, number] {
@@ -1010,7 +1029,7 @@ export class Labyrinth {
       mapData.items.set(proj.symbol, []);
     }
 
-    const items = mapData.items.get(proj.symbol);
+    const items = mapData.items.get(proj.symbol)!;
     let foundItem = false;
 
     for (const item of items) {
@@ -1032,15 +1051,9 @@ export class Labyrinth {
 
     this.engine.text(this.currentStatus, this.to_screen_coord(2, 1), consts.White);
 
-    const speed = 'FPS: ' + this.fps;
-
     const money = currencyFormatter.format(this.persistedData.coins) + ' $';
-    this.engine.text(money, this.to_screen_coord(consts.charPerLine - money.length - 7, 1), item2color.$);
+    this.engine.text(money, this.to_screen_coord(consts.charPerLine - money.length - 7, 1), item2color.get('$')!);
     this.engine.text('[esc]', this.to_screen_coord(consts.charPerLine - 6, 1), consts.OverlayNormal);
-
-    if (this.persistedData.isRt) {
-      this.engine.text(speed, this.to_screen_coord(consts.charPerLine - speed.length, 0), consts.OverlayNormal);
-    }
 
     const h = consts.mapLines + consts.headerSize + 1;
 
@@ -1056,18 +1069,18 @@ export class Labyrinth {
 
     if (this.persistedData.weapon !== '') {
       this.engine.text('- ' +
-        make_first_letter_upper(translations.item2description[lang][this.persistedData.weapon].text),
+        make_first_letter_upper(translations.item2description.get(lang)!.get(this.persistedData.weapon)!.text),
         this.to_screen_coord(3, h), consts.OverlayHighlight);
     }
 
     if (this.persistedData.rocks !== 0) {
       this.engine.text('- ' +
-        make_first_letter_upper(translations.item2description[lang]['*'].text) + ' (x' + this.persistedData.rocks + ')',
+        make_first_letter_upper(translations.item2description.get(lang)!.get('*')!.text) + ' (x' + this.persistedData.rocks + ')',
         this.to_screen_coord(3, h + 1), consts.OverlayHighlight);
     }
 
     if (this.persistedData.rocks > 0) {
-      const txt = '⇧ ' + translations.lancer[lang];
+      const txt = '⇧ ' + translations.lancer.get(lang)!;
 
       if (this.isThrowing) {
         this.engine.text(txt, this.to_screen_coord(29, h + 1, -2), consts.OverlaySelected);
@@ -1077,7 +1090,7 @@ export class Labyrinth {
     }
   }
   draw_message(): void {
-    if (this.gameOverMessage !== '') {
+    if (this.gameOverMessage !== '' && this.currentMap != null) {
       const lang = 'fr';
       const retry = translations.retry.get(lang)!;
 
@@ -1125,7 +1138,7 @@ export class Labyrinth {
     }
   }
   draw_menu(): void {
-    if (this.isMenuOpen) {
+    if (this.isMenuOpen && this.currentMap != null) {
       let i;
 
       this.engine.rect(this.to_screen_coord(consts.charPerLine / 2 - 15, 10),
@@ -1143,7 +1156,7 @@ export class Labyrinth {
 
       i = 0;
 
-      for (const [text, func, enabled] of this.gameMenu) {
+      for (const [text, , enabled] of this.gameMenu) {
         let txt: string;
         let x = consts.charPerLine / 2 - 5;
         let color: string;
@@ -1185,27 +1198,20 @@ export class Labyrinth {
     let save = Labyrinth.get_from_storage();
     const lang = 'fr';
 
-    // Throw away incompatible saves :)
-    if (save !== null && save.isRt === undefined) {
-      save = null;
-    }
-
     this.mainMenu = [
       [ translations.new_game_tt.get(lang), (l: Labyrinth) => Labyrinth.clear_and_start_tt(l), true ],
-      [ translations.new_game_rt.get(lang), (l: Labyrinth) => Labyrinth.clear_and_start_rt(l), true ],
-      [ translations.load.get(lang), (l: Labyrinth) => Labyrinth.load_save(l, save), save !== null ],
-      // [ translations.lang[lang], (l: Labyrinth) => Labyrinth.toggle_language(l), true ],
+      [ translations.load.get(lang), (l: Labyrinth) => Labyrinth.load_save(l, save != null ? save : new PersistedData()), save != null ],
     ];
 
     this.gameMenu = [
       [ translations.save.get(lang), (l: Labyrinth) => Labyrinth.save_to_storage(l), true ],
-      [ translations.load.get(lang), (l: Labyrinth) => Labyrinth.load_from_storage(l), save !== null ],
+      [ translations.load.get(lang), (l: Labyrinth) => Labyrinth.load_from_storage(l), save != null ],
       [ translations.exit.get(lang), (l: Labyrinth) => Labyrinth.open_main_menu(l), true],
     ];
 
     if (resetPosition) {
       if (this.mainMenu[1][2]) {
-        this.menuPosition = 2;
+        this.menuPosition = 1;
       } else {
         this.menuPosition = 0;
       }

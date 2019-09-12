@@ -24,7 +24,7 @@ export const lance = new Map<string, Map<string, string>>([
   ])],
 ]);
 
-export const item2description = new Map<string, Map<string, string>>([
+export const item2description = new Map<string, Map<string, any>>([
   ['en', new Map<string, any>([
     ['*', { text: 'rock', genre: 'M' }],
     ['/', { text: 'sword', genre: 'M' }],
@@ -66,13 +66,8 @@ export const retry = new Map<string, string>([
 ]);
 
 export const new_game_tt = new Map<string, string>([
-  ['en', 'New game (turn by turn)'],
-  ['fr', 'Nouvelle partie (tour par tour)'],
-]);
-
-export const new_game_rt = new Map<string, string>([
-  ['en', 'New game (real time)'],
-  ['fr', 'Nouvelle partie (temps réél)']
+  ['en', 'New game'],
+  ['fr', 'Nouvelle partie'],
 ]);
 
 export const load = new Map<string, string>([
