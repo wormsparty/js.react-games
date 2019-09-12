@@ -2,7 +2,7 @@
 import {AllMaps} from './map_content';
 import * as consts from './const';
 import * as translations from './translations';
-import {LevelMap, Pos, ObjPos, ProjPos} from './map_logic';
+import {LevelMap, Pos, ObjPos, ProjPos, TeleportPos} from './map_logic';
 import {item2color} from './const';
 import {SpawnerState} from './target';
 
@@ -172,12 +172,12 @@ class PersistedData {
         x: this.heroPosition.x,
         y: this.heroPosition.y
       },
-      map_data: {},
-      current_map_name: this.currentMapName,
+      mapData: {},
+      currentMapName: this.currentMapName,
     };
 
     for (const [i, data] of this.mapData) {
-      p.map_data[i] = data.print();
+      p.mapData[i] = data.print();
     }
 
     return p;
@@ -463,7 +463,7 @@ export class Labyrinth {
       return [false, new Pos(0, 0), ''];
     }
 
-    return this.do_teleport(symbol, heroPos, heroPos, heroPos);
+    return this.do_teleport(symbol, new TeleportPos(heroPos.x, heroPos.y, 0), heroPos, heroPos);
   }
   move_hero(heroPos: Pos, walkablePos: Pos, aimPos: Pos): [Pos, boolean] {
     const ret = this.try_teleport(heroPos, walkablePos);
@@ -607,7 +607,7 @@ export class Labyrinth {
       '',
     ];
   }
-  do_teleport(chr: string, pos: Pos, heroPos: Pos, futurePos: Pos): [boolean, Pos, string] {
+  do_teleport(chr: string, pos: TeleportPos, heroPos: Pos, futurePos: Pos): [boolean, Pos, string] {
     if (this.currentMap == null) {
       return [ false, new Pos(0, 0), ''];
     }
@@ -624,9 +624,8 @@ export class Labyrinth {
       teleportsOfOtherMap = newMap.teleports.get('>')!;
       id = 0;
     } else {
-      // Impossible for now AFAIK
       teleportsOfOtherMap = newMap.teleports.get(chr)!;
-      id = 0;//pos.id;
+      id = pos.id;
     }
 
     const tp = teleportsOfOtherMap[id];
