@@ -1,33 +1,67 @@
-.App {
-  text-align: center;
+
+body, input[text], button {
+  color: #888;
+  font-family: Cambria, Georgia, sans-serif;
 }
 
-.App-logo {
-  animation: App-logo-spin infinite 20s linear;
-  height: 40vmin;
-  pointer-events: none;
+a {
+  cursor: hand;
 }
 
-.App-header {
-  background-color: #282c34;
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  font-size: calc(10px + 2vmin);
-  color: white;
+button {
+  font-family: Arial, sans-serif;
+  background-color: #eee;
+  border: none;
+  padding: 5px 10px;
+  border-radius: 4px;
+  cursor: hand;
 }
 
-.App-link {
-  color: #61dafb;
+button:hover {
+  background-color: #cfd8dc;
 }
 
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+button:disabled {
+  background-color: #eee;
+  color: #aaa;
+  cursor: auto;
+}
+
+nav a {
+  padding: 5px 10px;
+  text-decoration: none;
+  margin-right: 10px;
+  margin-top: 10px;
+  display: inline-block;
+  background-color: #eee;
+  border-radius: 4px;
+}
+
+nav a:visited, a:link {
+  color: #607D8B;
+}
+
+nav a:hover {
+  color: #039be5;
+  background-color: #CFD8DC;
+}
+
+nav a.active {
+  color: #039be5;
+}
+
+* {
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+app-root {
+  display: block;
+  width: 100%;
+  left: 0;
+  top: 0;
+}
+
+@font-face {
+  font-family: "wonder";
+  src: url("assets/8-BIT WONDER.TTF")
 }
