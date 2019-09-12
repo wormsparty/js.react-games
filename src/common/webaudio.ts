@@ -1,6 +1,6 @@
 export class WebAudio {
-  private readonly context;
-  private readonly data;
+  private readonly context: AudioContext;
+  private readonly data = new Map<string, AudioBuffer>();
 
   constructor() {
     this.context = new AudioContext();
@@ -9,9 +9,9 @@ export class WebAudio {
       return;
     }
   }
-  load(file: string, onload, onfailure) {
+  load(file: string, onload: (name: string) => void, onfailure: () => void) {
       const context = this.context;
-      const data = this.data;
+      const data: Map<string, AudioBuffer> = this.data;
 
       const request = new XMLHttpRequest();
       request.open('GET', file, true);
@@ -27,7 +27,7 @@ export class WebAudio {
               return;
             }
 
-            data[file] = buffer;
+            data.set(file, buffer);
             onload(file);
           },
           (error) => {
@@ -45,11 +45,14 @@ export class WebAudio {
       request.send();
   }
   play(filename: string) {
-      const data = this.data[filename];
+      const data = this.data.get(filename);
 
-      const source = this.context.createBufferSource();
-      source.buffer = data;
-      source.connect(this.context.destination);
-      source.start(0);
+      if (data != null)
+      {
+          const source = this.context.createBufferSource();
+          source.buffer = data;
+          source.connect(this.context.destination);
+          source.start(0);
+      }
   }
 }

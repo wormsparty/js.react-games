@@ -51,8 +51,8 @@ export const projectile2color = {
   '&': '#FF0000',
 };
 
-export const weapon2damage = {
-  '/': 1,
-  '\\': 3,
-  '': 0,
-};
+export const weapon2damage = new Map<string, number>([
+  ['/', 1],
+  ['\\', 3],
+  ['', 0],
+]);

@@ -219,14 +219,14 @@ export class Labyrinth {
 
   gameOverMessage: string;
   lastSave: PersistedData | null = null;
-  persistedData: PersistedData | null = null;
+  persistedData: PersistedData = new PersistedData();
   initialPersistedData: PersistedData | null = null;
   fps: number;
 
   currentMap: LevelMap | null = null;
-  currentMapData: PersistedMapData | null = null;
+  currentMapData: PersistedMapData = new PersistedMapData();
 
-  static load_save(l: Labyrinth, save: PersistedData | null) {
+  static load_save(l: Labyrinth, save: PersistedData) {
     l.persistedData = save;
 
     l.isMainMenu = false;
@@ -240,7 +240,11 @@ export class Labyrinth {
     l.save_to_memory();
   }
   static load_from_storage(l: Labyrinth): void {
-    Labyrinth.load_save(l, Labyrinth.get_from_storage());
+    var data = Labyrinth.get_from_storage();
+
+    if (data != null) {
+      Labyrinth.load_save(l, data);
+    }
   }
   static save_to_storage(l: Labyrinth): void {
     if (l.persistedData != null) {
@@ -268,17 +272,6 @@ export class Labyrinth {
 
     return persistedData;
   }
-/*  static toggle_language(l: Labyrinth): void {
-    if (l.personalInfo.lang === 'en') {
-      l.personalInfo.lang = 'fr';
-    } else {
-      l.personalInfo.lang = 'en';
-    }
-
-    l.save_personal_infos();
-    l.refresh_menu(false);
-    l.draw();
-  }*/
   static open_main_menu(l: Labyrinth) {
     l.refresh_menu(true);
     l.isMainMenu = true;
@@ -381,7 +374,7 @@ export class Labyrinth {
           if (item === '$') {
             this.persistedData.coins++;
             positions.splice(i, 1);
-            currentStatus = '> 1 $' + translations.pris.get(lang)!.M;
+            currentStatus = '> 1 $' + translations.pris.get(lang)!.get('M');
           } else {
             const description = translations.item2description.get(lang)!.get(item)!;
             currentStatus = translations.take.get(lang) + description.text;
@@ -423,14 +416,14 @@ export class Labyrinth {
     }
   }
   try_pick_or_drop_item(heroPos: Pos): boolean {
-    const lang = this.personalInfo.lang;
+    const lang = 'fr';
 
     if (this.pressed.get('5')) {
       let itemPicked = false;
       let currentStatus = this.currentStatus;
 
       for (const [item, positions] of this.currentMapData.items) {
-        const description = translations.item2description[lang][item];
+        const description = translations.item2description.get(lang)!.get(item)!;
 
         for (let i = 0 ; i < positions.length; i++) {
           if (positions[i].equals(heroPos)) {
@@ -451,7 +444,7 @@ export class Labyrinth {
               currentStatus += ' (x' + positions[i].usage + ')';
             }
 
-            currentStatus += translations.pris[lang][description.genre];
+            currentStatus += translations.pris.get(lang)!.get(description.genre)!;
             positions.splice(i, 1);
 
             itemPicked = true;
@@ -994,7 +987,7 @@ export class Labyrinth {
     }
   }
   get_weapon_damage() {
-    return consts.weapon2damage[this.persistedData.weapon];
+    return consts.weapon2damage.get(this.persistedData.weapon)!;
   }
   get_symbol_at(pos: Pos): string {
     return this.currentMap.get_symbol_at(pos.x, pos.y);

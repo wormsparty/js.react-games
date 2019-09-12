@@ -7,11 +7,14 @@ import { Labyrinth } from './labyrinth';
 
 import './Rogue.css';
 
-class Rogue extends React.Component {
+interface RogueProps {
+}
+
+class Rogue extends React.Component<RogueProps> {
     private labyrinth: Labyrinth;
 
-    constructor() {
-        super();
+    constructor(props: Readonly<RogueProps>) {
+        super(props);
         document.body.style.overflow = 'hidden';
 
         const labyrinth = new Labyrinth();

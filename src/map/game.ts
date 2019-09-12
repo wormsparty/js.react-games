@@ -66,8 +66,8 @@ export class Game {
 
     this.textureLoader.setLoadedFunction(allTilesetsLoaded);
 
-    this.tilesets.set('tiles', new Tileset('../../assets/tileset.png', this.textureLoader));
-    this.tilesets.set('foes', new Tileset('../../assets/foes.png', this.textureLoader));
+    this.tilesets.set('tiles', new Tileset('%PUBLIC_URL%/tileset.png', this.textureLoader));
+    this.tilesets.set('foes', new Tileset('%PUBLIC_URL%/foes.png', this.textureLoader));
 
     if (this.editor != null) {
       this.editor.setHandles(this.engine, this.tilesets, this.tilesize);
