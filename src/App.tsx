@@ -39,12 +39,13 @@ export default class App extends React.Component<AppProps, AppState> {
         return (
             <div>
                 <div style={buttonStyle}>
-                    <div onClick={this.switchToRogue}>
+                    <span role={'img'} aria-label={'Switch to Rogue'} onClick={this.switchToRogue}>
                         🧙‍♂
-                    </div>
-                    <div onClick={this.switchToMap}>
+                    </span>
+                    <br/>
+                    <span role={'img'} aria-label={'Switch to MapEdit'} onClick={this.switchToMap}>
                         👩‍🎨
-                    </div>
+                    </span>
                 </div>
                 {(this.state.view === "Rogue") && <Rogue />}
                 {(this.state.view === "MapEdit") && <MapEdit />}
