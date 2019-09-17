@@ -63,5 +63,5 @@ app-root {
 
 @font-face {
   font-family: "wonder";
-  src: url("%PUBLIC_URL%/8-BIT WONDER.TTF")
+  src: url("/8-BIT WONDER.TTF")
 }

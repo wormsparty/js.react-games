@@ -10,7 +10,7 @@ export const OverlayHighlight =  '#FFFFFF';
 export const OverlaySelected =  '#FF00FF';
 
 /*
- * Map
+ * MapEdit
  */
 export const globalTile2color = new Map<string, string>([
   ['#', '#646464'],

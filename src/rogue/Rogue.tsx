@@ -14,6 +14,7 @@ class Rogue extends React.Component<RogueProps> {
     private labyrinth: Labyrinth | null = null;
 
     componentDidMount() {
+        document.body.style.overflow = 'hidden';
         const labyrinth = new Labyrinth();
         this.labyrinth = labyrinth;
         this.labyrinth.resize(window.innerWidth, window.innerHeight);
@@ -28,11 +29,6 @@ class Rogue extends React.Component<RogueProps> {
         });
     }
 
-    constructor(props: Readonly<RogueProps>) {
-        super(props);
-        document.body.style.overflow = 'hidden';
-    }
-
     doUpdate = () => {
         if (this.labyrinth == null) {
             return;
@@ -44,7 +40,7 @@ class Rogue extends React.Component<RogueProps> {
         for (const [key] of this.labyrinth.pressed) {
             this.labyrinth.pressed.set(key, false);
         }
-    }
+    };
 
     onResize = () => {
         if (this.labyrinth == null) {
@@ -52,7 +48,7 @@ class Rogue extends React.Component<RogueProps> {
         }
 
         this.labyrinth.resize(window.innerWidth, window.innerHeight);
-    }
+    };
 
     onKeydown = (event: KeyboardEvent) => {
         if (this.labyrinth == null) {
