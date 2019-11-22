@@ -3,16 +3,7 @@ import {Tileset} from './tileset';
 import {TextureLoader} from './textureloader';
 import {Level} from './level';
 import {Editor} from './editor';
-
-class KeyPress {
-  public pressed: boolean;
-  public prevPressed: boolean;
-
-  constructor() {
-    this.pressed = false;
-    this.prevPressed = false;
-  }
-}
+import {KeyPress} from "../common/keypress";
 
 export class Game {
   public pressed: Map<string, KeyPress>;
@@ -28,8 +19,8 @@ export class Game {
   fps: number;
 
   constructor(enableEditor: boolean) {
-    let width = 256;
-    let height = 224;
+    let width = 512;
+    let height = 448;
 
     if (enableEditor) {
       this.editor = new Editor();

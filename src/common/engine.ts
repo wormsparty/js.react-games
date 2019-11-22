@@ -1,6 +1,6 @@
 import { Canvas2D } from './canvas2d';
 import {Tileset} from '../map/tileset';
-import {Pos} from "../rogue/map_logic";
+import {Pos} from "./pos";
 // import { WebAudio } from './webaudio';
 
 export class Engine {

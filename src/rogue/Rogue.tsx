@@ -34,12 +34,8 @@ class Rogue extends React.Component<RogueProps> {
             return;
         }
 
-        this.labyrinth.do_update();
+        this.labyrinth.doUpdate();
         this.labyrinth.draw();
-
-        for (const [key] of this.labyrinth.pressed) {
-            this.labyrinth.pressed.set(key, false);
-        }
     };
 
     onResize = () => {
@@ -53,34 +49,6 @@ class Rogue extends React.Component<RogueProps> {
     onKeydown = (event: KeyboardEvent) => {
         if (this.labyrinth == null) {
             return;
-        }
-
-        let update = false;
-
-        if (this.labyrinth.pressed.has(event.key)) {
-            this.labyrinth.pressed.set(event.key, true);
-            update = true;
-        } else {
-            if (event.key === 'ArrowLeft') {
-                this.labyrinth.pressed.set('4', true);
-                update = true;
-            } else if (event.key === 'ArrowRight') {
-                this.labyrinth.pressed.set('6', true);
-                update = true;
-            } else if (event.key === 'ArrowUp') {
-                this.labyrinth.pressed.set('8', true);
-                update = true;
-            } else if (event.key === 'ArrowDown') {
-                this.labyrinth.pressed.set('2', true);
-                update = true;
-            } else if (event.key === 'Enter') {
-                this.labyrinth.pressed.set('5', true);
-                update = true;
-            }
-        }
-
-        if (update) {
-            this.doUpdate();
         }
     };
 

@@ -1,5 +1,5 @@
 import {Tileset} from '../map/tileset';
-import {Pos} from "../rogue/map_logic";
+import {Pos} from "./pos";
 
 export class Canvas2D {
   private readonly ctx: CanvasRenderingContext2D;

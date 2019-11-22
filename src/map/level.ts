@@ -1,7 +1,7 @@
 import {Editor} from './editor';
 import {Engine} from '../common/engine';
 import {Tileset} from './tileset';
-import {Pos} from "../rogue/map_logic";
+import {Pos} from "../common/pos";
 
 class Cell {
   public tileset: string;

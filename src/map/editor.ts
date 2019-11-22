@@ -1,6 +1,6 @@
 import {Tileset} from './tileset';
 import {Engine} from '../common/engine';
-import {Pos} from "../rogue/map_logic";
+import {Pos} from "../common/pos";
 
 export class Editor {
   public currentTileIndexX = 0;
