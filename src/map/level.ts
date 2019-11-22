@@ -48,8 +48,6 @@ export class Level {
       return;
     }
 
-    let cellHighlighted = false;
-
     for (const [pos, cell] of this.cells) {
       const tileset = this.tilesets.get(cell.tileset)!;
 
@@ -62,16 +60,9 @@ export class Level {
       }
 
       this.engine.img(tileset, new Pos(xx + editorOuterWidth, yy + editorTopHeight), cell.tileX, cell.tileY);
-
-      if (this.engine.mousePosX >= xx && this.engine.mousePosX < xx + this.tilesize
-        && this.engine.mousePosY >= yy && this.engine.mousePosY < yy + this.tilesize
-        && xx < this.engine.referenceWidth) {
-        this.engine.rect(new Pos(xx, yy), this.tilesize, this.tilesize, 'rgba(55, 55, 55, 0.5)');
-        cellHighlighted = true;
-      }
     }
 
-    if (!cellHighlighted && this.engine.mousePosX >= editorOuterWidth) {
+    if (this.engine.mousePosX >= editorOuterWidth) {
       const xx = this.engine.mousePosX - (this.engine.mousePosX - editorOuterWidth) % this.tilesize;
       const yy = this.engine.mousePosY - (this.engine.mousePosY - editorTopHeight) % this.tilesize;
 
