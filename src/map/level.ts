@@ -70,6 +70,16 @@ export class Level {
     }
   }
 
+  findCellAtPos(p: Pos): [Pos | undefined, Cell | undefined ] {
+      for (const [pos, cell] of this.cells) {
+          if (pos.equals(p)) {
+              return [ pos, cell ];
+          }
+      }
+
+      return [ undefined, undefined ];
+  }
+
   onMouseMove(editor: Editor | null) {
     if (!this.isClicking || editor == null || this.engine == null) {
       return;
@@ -85,7 +95,23 @@ export class Level {
     const vertTiles = (this.engine.referenceHeight - topBarHeight) / this.tilesize;
 
     if (xx >= 0 && yy >= 0 && xx < horizTiles && yy < vertTiles) {
-      this.cells.set(new Pos(xx - this.shiftLeft, yy - this.shiftTop), {tileset: editor.currentMenu, tileX: editor.currentTileIndexX, tileY: editor.currentTileIndexY});
+        const p = new Pos(xx - this.shiftLeft, yy - this.shiftTop);
+        const [pos, cell] = this.findCellAtPos(p);
+
+        if (!this.engine.isRightClick) {
+            if (pos === undefined || cell === undefined) {
+                this.cells.set(p, {tileset: editor.currentMenu, tileX: editor.currentTileIndexX, tileY: editor.currentTileIndexY});
+                console.log('Adding new cell - now ' + this.cells.size);
+            } else {
+                cell.tileset = editor.currentMenu;
+                cell.tileX = editor.currentTileIndexX;
+                cell.tileY = editor.currentTileIndexY;
+                console.log('Replaced existing cell');
+            }
+        } else if (pos !== undefined) {
+            this.cells.delete(pos);
+            console.log('Removed cell - now ' + this.cells.size);
+        }
     }
   }
 

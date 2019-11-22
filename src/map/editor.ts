@@ -80,15 +80,26 @@ export class Editor {
     if (this.engine != null && this.engine.mousePosX < this.leftPanelWidth) {
       const tileset = this.tilesets.get(this.currentMenu)!;
 
-      const xx = Math.floor(this.engine.mousePosX / this.tilesize);
-      const yy = Math.floor((this.engine.mousePosY - this.outerHeight()) / this.tilesize);
+      if (this.engine.mousePosY < this.outerHeight()) {
+        if (this.engine.mousePosX < 36) {
+          this.currentMenu = 'tiles';
+        } else if (this.engine.mousePosX < 68) {
+          this.currentMenu = 'foes';
+        } else {
+          this.currentMenu = 'goodies';
+        }
+      }
+      else {
+        const xx = Math.floor(this.engine.mousePosX / this.tilesize);
+        const yy = Math.floor((this.engine.mousePosY - this.outerHeight()) / this.tilesize);
 
-      const horizTiles = tileset.image.width / this.tilesize;
-      const vertTiles = tileset.image.height / this.tilesize;
+        const horizTiles = tileset.image.width / this.tilesize;
+        const vertTiles = tileset.image.height / this.tilesize;
 
-      if (xx >= 0 && yy >= 0 && xx < horizTiles && yy < vertTiles) {
-        this.currentTileIndexX = xx;
-        this.currentTileIndexY = yy;
+        if (xx >= 0 && yy >= 0 && xx < horizTiles && yy < vertTiles) {
+          this.currentTileIndexX = xx;
+          this.currentTileIndexY = yy;
+        }
       }
 
       return true;

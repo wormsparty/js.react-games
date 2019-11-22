@@ -50,6 +50,7 @@ export class Game {
     this.textureLoader = new TextureLoader();
     this.fps = 30;
   }
+
   loop() {
     const allTilesetsLoaded = () => {
       this.updateAndDraw();
@@ -59,21 +60,23 @@ export class Game {
 
     this.tilesets.set('tiles', new Tileset(process.env.PUBLIC_URL + '/tileset.png', this.textureLoader));
     this.tilesets.set('foes', new Tileset(process.env.PUBLIC_URL + '/foes.png', this.textureLoader));
+    this.tilesets.set('goodies', new Tileset(process.env.PUBLIC_URL + '/goodies.png', this.textureLoader));
 
     if (this.editor != null) {
       this.editor.setHandles(this.engine, this.tilesets, this.tilesize);
     }
 
     this.level.setHandles(this.engine, this.tilesets, this.tilesize);
-
     this.textureLoader.waitLoaded();
   }
+
   updateAndDraw() {
     setInterval(() => {
       this.doUpdate();
       this.draw();
     }, 1000 / this.fps);
   }
+
   draw(): void {
     this.engine.clear('#888888');
 
@@ -87,6 +90,7 @@ export class Game {
       this.level.draw(this.editor);
     }
   }
+
   doUpdate(): void {
     let key = this.pressed.get('ArrowUp')!;
 
@@ -116,23 +120,27 @@ export class Game {
       key.prevPressed = key.pressed;
     }
   }
+
   resize(width: number, height: number): void {
     this.engine.resize(width, height);
     this.draw();
   }
-  setMousePos(x: number, y: number) {
+
+  setMousePos(x: number, y: number, which: number) {
     if (this.engine !== undefined && this.engine != null) {
-      this.engine.setMousePos(x, y);
+      this.engine.setMousePos(x, y, which);
       this.level.onMouseMove(this.editor);
     }
   }
-  mouseDown(x: number, y: number) {
-    this.engine.click(x, y);
+
+  mouseDown(x: number, y: number, which: number) {
+    this.engine.click(x, y, which);
 
     if (this.editor == null || !this.editor.onClick()) {
       this.level.mouseDown(this.editor);
     }
   }
+
   mouseUp() {
     this.level.mouseUp();
   }

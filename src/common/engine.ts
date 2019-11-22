@@ -15,13 +15,15 @@ export class Engine {
 
   public mousePosX: number = 0;
   public mousePosY: number = 0;
+  public isRightClick: boolean = false;
 
-  setMousePos(x: number, y: number) {
+  setMousePos(x: number, y: number, which: number) {
     this.mousePosX = Math.floor((x - this.graphics.marginLeft) / this.graphics.scaleFactor);
     this.mousePosY = Math.floor((y - this.graphics.marginTop) / this.graphics.scaleFactor);
+    this.isRightClick = which === 3;
   }
-  click(x: number, y: number) {
-    this.setMousePos(x, y);
+  click(x: number, y: number, which: number) {
+    this.setMousePos(x, y, which);
   }
   clear(color: string) {
     this.graphics.clear(color);
