@@ -6,9 +6,10 @@ export class Editor {
   public currentTileIndexX = 0;
   public currentTileIndexY = 0;
   public currentMenu = 'tiles';
+  public doExport: boolean = false;
 
   private readonly leftPanelWidth = 112;
-  private readonly topBarHeight = 10;
+  private readonly topBarHeight = 20;
   private readonly margin = 6;
 
   private engine: Engine | null = null;
@@ -57,36 +58,49 @@ export class Editor {
 
     this.engine.rect(new Pos(this.leftPanelWidth, 0), this.margin, this.engine.referenceHeight, '#000000');
 
+    this.engine.text('import', new Pos(4, 6), '#000');
+    this.engine.text('export', new Pos(46, 6), '#000');
+
+    const menuH = 16;
+
     if (this.currentMenu === 'tiles') {
-      this.engine.text('tiles', new Pos(4, 8), '#FFF');
+      this.engine.text('tiles', new Pos(4, menuH), '#FFF');
     } else {
-      this.engine.text('tiles', new Pos(4, 8), '#000');
+      this.engine.text('tiles', new Pos(4, menuH), '#000');
     }
 
     if (this.currentMenu === 'foes') {
-      this.engine.text('foes', new Pos(37, 8), '#FFF');
+      this.engine.text('foes', new Pos(37, menuH), '#FFF');
     } else {
-      this.engine.text('foes', new Pos(37, 8), '#000');
+      this.engine.text('foes', new Pos(37, menuH), '#000');
     }
 
     if (this.currentMenu === 'goodies') {
-      this.engine.text('goodies', new Pos(68, 8), '#FFF');
+      this.engine.text('goodies', new Pos(68, menuH), '#FFF');
     } else {
-      this.engine.text('goodies', new Pos(68, 8), '#000');
+      this.engine.text('goodies', new Pos(68, menuH), '#000');
     }
   }
 
   onClick(): boolean {
-    if (this.engine != null && this.engine.mousePosX < this.leftPanelWidth) {
+    if (this.engine != null && this.engine.mousePosX < this.leftPanelWidth && this.engine.mousePosX >= 0 && this.engine.mousePosY >= 0 && this.engine.mousePosY < this.engine.referenceHeight) {
       const tileset = this.tilesets.get(this.currentMenu)!;
 
       if (this.engine.mousePosY < this.outerHeight()) {
-        if (this.engine.mousePosX < 36) {
-          this.currentMenu = 'tiles';
-        } else if (this.engine.mousePosX < 68) {
-          this.currentMenu = 'foes';
+        if (this.engine.mousePosY < 12) {
+          if (this.engine.mousePosX < 46) {
+            alert('TODO: Import');
+          } else {
+            this.doExport = true;
+          }
         } else {
-          this.currentMenu = 'goodies';
+          if (this.engine.mousePosX < 36) {
+            this.currentMenu = 'tiles';
+          } else if (this.engine.mousePosX < 68) {
+            this.currentMenu = 'foes';
+          } else {
+            this.currentMenu = 'goodies';
+          }
         }
       }
       else {

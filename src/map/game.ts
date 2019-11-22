@@ -119,6 +119,8 @@ export class Game {
       this.level.shiftLeft--;
       key.prevPressed = key.pressed;
     }
+
+    this.level.update(this.editor);
   }
 
   resize(width: number, height: number): void {

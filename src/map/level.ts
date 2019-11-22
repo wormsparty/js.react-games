@@ -35,6 +35,28 @@ export class Level {
     this.cells = new Map<Pos, Cell>();
   }
 
+  exportToFile(json: any) {
+    const a = document.createElement("a");
+    const file = new Blob([json], {type: 'application/json'});
+    a.href = URL.createObjectURL(file);
+    a.download = 'export.json';
+    a.click();
+  }
+
+  exportToJson(): any {
+    const cells = [];
+
+    for(const [pos, cell] of this.cells) {
+        cells.push([pos.x, pos.y, cell.tileset, cell.tileX, cell.tileY]);
+    }
+
+   const json = {
+        cells: cells,
+   };
+
+    return JSON.stringify(json);
+  }
+
   draw(editor: Editor | null) {
     let editorOuterWidth = 0;
     let editorTopHeight = 0;
@@ -70,6 +92,16 @@ export class Level {
     }
   }
 
+  update(editor: Editor | null) {
+    if (editor !== null) {
+        if (editor.doExport) {
+            const json = this.exportToJson();
+            this.exportToFile(json);
+            editor.doExport = false;
+        }
+    }
+  }
+
   findCellAtPos(p: Pos): [Pos | undefined, Cell | undefined ] {
       for (const [pos, cell] of this.cells) {
           if (pos.equals(p)) {
@@ -101,16 +133,13 @@ export class Level {
         if (!this.engine.isRightClick) {
             if (pos === undefined || cell === undefined) {
                 this.cells.set(p, {tileset: editor.currentMenu, tileX: editor.currentTileIndexX, tileY: editor.currentTileIndexY});
-                console.log('Adding new cell - now ' + this.cells.size);
             } else {
                 cell.tileset = editor.currentMenu;
                 cell.tileX = editor.currentTileIndexX;
                 cell.tileY = editor.currentTileIndexY;
-                console.log('Replaced existing cell');
             }
         } else if (pos !== undefined) {
             this.cells.delete(pos);
-            console.log('Removed cell - now ' + this.cells.size);
         }
     }
   }

@@ -91,7 +91,7 @@ export class Engine {
     this.canvas.oncontextmenu = function() {
         return false;
     };
-    
+
     this.graphics = new Canvas2D(this.canvas, width, height, fontSize, fontFamily, tilesize);
     /*this.audio = new WebAudio();
 
