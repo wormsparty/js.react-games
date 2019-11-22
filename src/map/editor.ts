@@ -58,8 +58,7 @@ export class Editor {
 
     this.engine.rect(new Pos(this.leftPanelWidth, 0), this.margin, this.engine.referenceHeight, '#000000');
 
-    this.engine.text('import', new Pos(4, 6), '#000');
-    this.engine.text('export', new Pos(46, 6), '#000');
+    this.engine.text('export', new Pos(4, 6), '#000');
 
     const menuH = 16;
 
@@ -89,8 +88,6 @@ export class Editor {
       if (this.engine.mousePosY < this.outerHeight()) {
         if (this.engine.mousePosY < 12) {
           if (this.engine.mousePosX < 46) {
-            alert('TODO: Import');
-          } else {
             this.doExport = true;
           }
         } else {

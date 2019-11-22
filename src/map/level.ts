@@ -57,6 +57,16 @@ export class Level {
     return JSON.stringify(json);
   }
 
+  import(data: string) {
+      const json = JSON.parse(data);
+
+      this.cells.clear();
+
+      for(const cell of json.cells) {
+          this.cells.set(new Pos(cell[0], cell[1]), new Cell(cell[2], cell[3], cell[4]));
+      }
+  }
+
   draw(editor: Editor | null) {
     let editorOuterWidth = 0;
     let editorTopHeight = 0;

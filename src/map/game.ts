@@ -146,4 +146,9 @@ export class Game {
   mouseUp() {
     this.level.mouseUp();
   }
+
+
+  import(data: string) {
+    this.level.import(data);
+  }
 }

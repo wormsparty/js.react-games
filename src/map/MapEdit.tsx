@@ -20,6 +20,12 @@ class MapEdit extends React.Component<MapProps> {
         window.addEventListener('mousedown', this.onMouseDown);
         window.addEventListener('mousemove', this.onMouseMove);
 
+        document.addEventListener("dragover", function( event ) {
+            event.preventDefault();
+        }, false);
+
+        document.addEventListener("drop", this.onDrop, false);
+
         const game = new Game(true);
         this.game = game;
         this.game.resize(window.innerWidth, window.innerHeight);
@@ -76,6 +82,33 @@ class MapEdit extends React.Component<MapProps> {
         }
 
         this.game.mouseUp();
+    };
+
+    onDrop = (event: DragEvent) => {
+        event.preventDefault();
+
+        if (event.dataTransfer !== null && event.dataTransfer.items) {
+            for (let i = 0; i < event.dataTransfer.items.length; i++) {
+                if (event.dataTransfer.items[i].kind === 'file') {
+                    const file = event.dataTransfer.items[i].getAsFile()!;
+                    console.log('Importing ' + file.name + '...');
+
+                    const reader = new FileReader();
+
+                    reader.onload = (e) => {
+                        if (this.game == null) {
+                            return;
+                        }
+
+                        if (typeof e.target!.result === 'string') {
+                            this.game.import(e.target!.result!);
+                        }
+                    };
+
+                    reader.readAsText(file);
+                }
+            }
+        }
     };
 
     render() {
