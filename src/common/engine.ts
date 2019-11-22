@@ -88,6 +88,10 @@ export class Engine {
   }
   constructor(canvasId: string, width: number, height: number, fontSize: number, fontFamily: string, integerZoom: boolean, tilesize: number) {
     this.canvas = document.getElementById(canvasId) as HTMLCanvasElement;
+    this.canvas.oncontextmenu = function() {
+        return false;
+    };
+    
     this.graphics = new Canvas2D(this.canvas, width, height, fontSize, fontFamily, tilesize);
     /*this.audio = new WebAudio();
 

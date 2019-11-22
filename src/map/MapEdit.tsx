@@ -19,7 +19,6 @@ class MapEdit extends React.Component<MapProps> {
         window.addEventListener('mouseup', this.onMouseUp);
         window.addEventListener('mousedown', this.onMouseDown);
         window.addEventListener('mousemove', this.onMouseMove);
-        window.addEventListener('contextmenu', this.onContextMenu);
 
         const game = new Game(true);
         this.game = game;
@@ -69,10 +68,6 @@ class MapEdit extends React.Component<MapProps> {
         }
 
         this.game.mouseDown(event.pageX, event.pageY, event.which);
-    };
-
-    onContextMenu = (event: MouseEvent) => {
-        return false;
     };
 
     onMouseUp = (event: MouseEvent) => {
