@@ -60,24 +60,18 @@ export class Editor {
 
     this.engine.text('export', new Pos(4, 6), '#000');
 
+    this.renderMenu('tiles', 4);
+    this.renderMenu('foes', 37);
+    this.renderMenu('goodies', 68);
+  }
+
+  renderMenu(name: string, posX: number) {
     const menuH = 16;
 
-    if (this.currentMenu === 'tiles') {
-      this.engine.text('tiles', new Pos(4, menuH), '#FFF');
+    if (this.currentMenu === name) {
+      this.engine!.text(name, new Pos(posX, menuH), '#FFF');
     } else {
-      this.engine.text('tiles', new Pos(4, menuH), '#000');
-    }
-
-    if (this.currentMenu === 'foes') {
-      this.engine.text('foes', new Pos(37, menuH), '#FFF');
-    } else {
-      this.engine.text('foes', new Pos(37, menuH), '#000');
-    }
-
-    if (this.currentMenu === 'goodies') {
-      this.engine.text('goodies', new Pos(68, menuH), '#FFF');
-    } else {
-      this.engine.text('goodies', new Pos(68, menuH), '#000');
+      this.engine!.text(name, new Pos(posX, menuH), '#000');
     }
   }
 
