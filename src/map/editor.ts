@@ -5,7 +5,7 @@ import {Pos} from "../common/pos";
 export class Editor {
   public currentTileIndexX = 0;
   public currentTileIndexY = 0;
-  public currentMenu = 'tiles';
+  public currentMenu = 'terrain';
   public doExport: boolean = false;
 
   private readonly leftPanelWidth = 112;
@@ -60,18 +60,18 @@ export class Editor {
 
     this.engine.text('export', new Pos(4, 6), '#000');
 
-    this.renderMenu('tiles', 4);
-    this.renderMenu('foes', 37);
-    this.renderMenu('goodies', 68);
+    this.renderMenu('terrain', 'terr.', 4);
+    this.renderMenu('personnages', 'pers.', 37);
+    this.renderMenu('objets', 'objets', 68);
   }
 
-  renderMenu(name: string, posX: number) {
+  renderMenu(name: string, str: string, posX: number) {
     const menuH = 16;
 
     if (this.currentMenu === name) {
-      this.engine!.text(name, new Pos(posX, menuH), '#FFF');
+      this.engine!.text(str, new Pos(posX, menuH), '#FFF');
     } else {
-      this.engine!.text(name, new Pos(posX, menuH), '#000');
+      this.engine!.text(str, new Pos(posX, menuH), '#000');
     }
   }
 
@@ -86,11 +86,11 @@ export class Editor {
           }
         } else {
           if (this.engine.mousePosX < 36) {
-            this.currentMenu = 'tiles';
+            this.currentMenu = 'terrain';
           } else if (this.engine.mousePosX < 68) {
-            this.currentMenu = 'foes';
+            this.currentMenu = 'personnages';
           } else {
-            this.currentMenu = 'goodies';
+            this.currentMenu = 'objets';
           }
         }
       }
