@@ -167,6 +167,7 @@ export class Game {
 
 
   import(data: string) {
-    this.level.import(data);
+    // TODO
+    //this.level.import(data);
   }
 }

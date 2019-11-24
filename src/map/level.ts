@@ -4,16 +4,16 @@ import {Tileset} from './tileset';
 import {Pos} from "../common/pos";
 import {Hero} from "./hero";
 
-class Cell {
-  public tileset: number;
-  public tileX: number;
-  public tileY: number;
+class Layer {
+    public tileset: number;
+    public cells: Array<Pos | undefined>;
+    public cellsX: number;
 
-  constructor(tileset: number, tileX: number, tileY: number) {
-    this.tileset = tileset;
-    this.tileX = tileX;
-    this.tileY = tileY;
-  }
+    constructor(tileset: number, cellsX: number, cellsY: number) {
+        this.tileset = tileset;
+        this.cellsX = cellsX;
+        this.cells = new Array<Pos>(cellsX * cellsY);
+    }
 }
 
 enum TileSetType {
@@ -29,7 +29,7 @@ export class Level {
   public tilesizeX: number = 0;
   public tilesizeY: number = 0;
 
-  public cells: Map<Pos, Cell> = new Map<Pos, Cell>();
+  public layers: Layer[] = new Array<Layer>();
   public hero: Hero = new Hero(TileSetType.Objets, 0, 0);
 
   private isClicking = false;
@@ -37,15 +37,21 @@ export class Level {
   public shiftLeft = 0;
   public shiftTop = 0;
 
+  public cellsX = 68;
+  public cellsY = 31;
+
   setHandles(engine: Engine, tilesets: Array<Tileset>, tilesizeX: number, tilesizeY: number) {
     this.engine = engine;
     this.tilesets = tilesets;
     this.tilesizeX = tilesizeX;
     this.tilesizeY = tilesizeY;
-    this.cells = new Map<Pos, Cell>();
+
+    for(let i = 0; i < tilesets.length; i++) {
+        this.layers.push(new Layer(i, this.cellsX, this.cellsY));
+    }
   }
 
-  exportToFile(json: any) {
+ /* exportToFile(json: any) {
     const a = document.createElement("a");
     const file = new Blob([json], {type: 'application/json'});
     a.href = URL.createObjectURL(file);
@@ -54,10 +60,14 @@ export class Level {
   }
 
   exportToJson(): any {
-    const cells = [];
+    const layers = [];
 
-    for(const [pos, cell] of this.cells) {
-        cells.push([pos.x, pos.y, cell.tileset, cell.tileX, cell.tileY]);
+    for(const layer of this.layers) {
+        const cells = [];
+
+        for(const cell of layer.cells) {
+            cells.push([cell.x, cell.y]);
+        }
     }
 
    const json = {
@@ -75,7 +85,7 @@ export class Level {
       for(const cell of json.cells) {
           this.cells.set(new Pos(cell[0], cell[1]), new Cell(cell[2], cell[3], cell[4]));
       }
-  }
+  }*/
 
   drawAt(tilesetNb: number, pos: Pos, tileX: number, tileY: number, editorOuterWidth: number, editorTopHeight: number) {
       if (this.engine == null) {
@@ -108,8 +118,16 @@ export class Level {
       return;
     }
 
-    for (const [pos, cell] of this.cells) {
-      this.drawAt(cell.tileset, pos, cell.tileX, cell.tileY, editorOuterWidth, editorTopHeight);
+    for (const layer of this.layers) {
+        for (let i = 0; i < this.cellsX; i++) {
+            for (let j = 0; j < this.cellsY; j++) {
+                const cell = layer.cells[i + j * this.cellsX];
+
+                if (cell !== undefined) {
+                    this.drawAt(layer.tileset, new Pos(i, j), cell.x, cell.y, editorOuterWidth, editorTopHeight);
+                }
+            }
+        }
     }
 
     this.drawAt(this.hero.tileset, this.hero.pos, this.hero.tilesetPosX, this.hero.tilesetPosY, editorOuterWidth, editorTopHeight);
@@ -125,21 +143,12 @@ export class Level {
   update(editor: Editor | null) {
     if (editor !== null) {
         if (editor.doExport) {
-            const json = this.exportToJson();
-            this.exportToFile(json);
+            // TODO
+            //const json = this.exportToJson();
+            //this.exportToFile(json);
             editor.doExport = false;
         }
     }
-  }
-
-  findCellAtPos(p: Pos): [Pos | undefined, Cell | undefined ] {
-      for (const [pos, cell] of this.cells) {
-          if (pos.equals(p)) {
-              return [ pos, cell ];
-          }
-      }
-
-      return [ undefined, undefined ];
   }
 
   onMouseMove(editor: Editor | null) {
@@ -164,19 +173,16 @@ export class Level {
             && editor.currentTileIndexY === this.hero.tilesetPosY) {
             this.hero.pos = p;
         } else {
-            const [pos, cell] = this.findCellAtPos(p);
+            const layer = this.layers[editor.currentMenu];
+            let pos: Pos | undefined;
 
             if (!this.engine.isRightClick) {
-                if (pos === undefined || cell === undefined) {
-                    this.cells.set(p, {tileset: editor.currentMenu, tileX: editor.currentTileIndexX, tileY: editor.currentTileIndexY});
-                } else {
-                    cell.tileset = editor.currentMenu;
-                    cell.tileX = editor.currentTileIndexX;
-                    cell.tileY = editor.currentTileIndexY;
-                }
-            } else if (pos !== undefined) {
-                this.cells.delete(pos);
+                pos = new Pos(editor.currentTileIndexX, editor.currentTileIndexY);
+            } else {
+                pos = undefined;
             }
+
+            layer.cells[p.x + p.y * this.cellsX] = pos;
         }
 
     }

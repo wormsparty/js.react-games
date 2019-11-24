@@ -23,9 +23,11 @@ export class Editor {
     this.tilesizeX = tilesizeX;
     this.tilesizeY = tilesizeY;
   }
+
   outerWidth() {
     return this.leftPanelWidth + this.margin;
   }
+
   outerHeight() {
     return this.topBarHeight + this.margin;
   }
