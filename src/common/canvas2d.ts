@@ -15,9 +15,10 @@ export class Canvas2D {
   public marginTop: number;
   public marginBottom: number;
   public scaleFactor: number;
-  public tilesize: number;
+  public tilesizeX: number;
+  public tilesizeY: number;
 
-  constructor(canvas: HTMLCanvasElement, referenceWidth: number, referenceHeight: number, fontSize: number, fontFamily: string, tilesize: number) {
+  constructor(canvas: HTMLCanvasElement, referenceWidth: number, referenceHeight: number, fontSize: number, fontFamily: string, tilesizeX: number, tilesizeY: number) {
     this.ctx = canvas.getContext('2d')!;
     this.scaleFactor = 1;
     this.marginLeft = 0;
@@ -31,7 +32,8 @@ export class Canvas2D {
     this.fontSize = fontSize;
     this.fontFamily = fontFamily;
     this.font = fontSize + 'px ' + fontFamily;
-    this.tilesize = tilesize;
+    this.tilesizeX = tilesizeX;
+    this.tilesizeY = tilesizeY;
   }
   resize(scaleFactor: number, marginLeft: number, marginRight: number, marginTop: number, marginBottom: number, windowWidth: number, windowHeight: number) {
     this.scaleFactor = scaleFactor;
@@ -46,8 +48,8 @@ export class Canvas2D {
     this.ctx.imageSmoothingEnabled = false;
   }
   img(tileset: Tileset, pos: Pos, i: number, j: number) {
-    const sx = this.tilesize * i;
-    const sy = this.tilesize * j;
+    const sx = this.tilesizeX * i;
+    const sy = this.tilesizeY * j;
 
     let cutLeft = 0;
     let cutRight = 0;
@@ -62,36 +64,31 @@ export class Canvas2D {
       cutTop = -pos.y;
     }
 
-    if (pos.x + this.tilesize > this.referenceWidth) {
-      cutRight = pos.x + this.tilesize - this.referenceWidth;
+    if (pos.x + this.tilesizeX > this.referenceWidth) {
+      cutRight = pos.x + this.tilesizeX - this.referenceWidth;
     }
 
-    if (pos.y + this.tilesize > this.referenceHeight) {
-      cutBottom = pos.y + this.tilesize - this.referenceHeight;
+    if (pos.y + this.tilesizeY > this.referenceHeight) {
+      cutBottom = pos.y + this.tilesizeY - this.referenceHeight;
     }
 
-    if (cutLeft < this.tilesize
-      && cutRight < this.tilesize
-      && cutTop < this.tilesize
-      && cutBottom < this.tilesize) {
+    if (cutLeft < this.tilesizeX
+      && cutRight < this.tilesizeX
+      && cutTop < this.tilesizeY
+      && cutBottom < this.tilesizeY) {
       const targetX = (pos.x + cutLeft) * this.scaleFactor + this.marginLeft;
       const targetY = (pos.y + cutTop) * this.scaleFactor + this.marginTop;
-
-      /*console.log('s = ' + sx + ', ' + sy);
-      console.log('w = ' + w + ', h = ' + h);
-      console.log('cut = ' + cutLeft + ', ' + cutRight + ', ' + cutTop + ', ' + cutBottom);
-      console.log('target = ' + targetX + ',' + targetY);*/
 
       this.ctx.drawImage(
         tileset.image,
         sx + cutLeft,
         sy + cutTop,
-        this.tilesize - cutLeft - cutRight,
-        this.tilesize - cutTop - cutBottom,
+        this.tilesizeX - cutLeft - cutRight,
+        this.tilesizeY - cutTop - cutBottom,
         targetX,
         targetY,
-        (this.tilesize - cutLeft - cutRight) * this.scaleFactor,
-        (this.tilesize - cutTop - cutBottom) * this.scaleFactor);
+        (this.tilesizeX - cutLeft - cutRight) * this.scaleFactor,
+        (this.tilesizeY - cutTop - cutBottom) * this.scaleFactor);
     }
   }
   rect(pos: Pos, w: number, h: number, color: string) {

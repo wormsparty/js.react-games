@@ -2,6 +2,7 @@ import {Editor} from './editor';
 import {Engine} from '../common/engine';
 import {Tileset} from './tileset';
 import {Pos} from "../common/pos";
+import {Hero} from "./hero";
 
 class Cell {
   public tileset: string;
@@ -19,19 +20,22 @@ export class Level {
   private engine: Engine | null = null;
 
   private tilesets: Map<string, Tileset> = new Map<string, Tileset>();
-  public tilesize: number = 0;
+  public tilesizeX: number = 0;
+  public tilesizeY: number = 0;
 
   public cells: Map<Pos, Cell> = new Map<Pos, Cell>();
+  public hero: Hero = new Hero('terrain', 0, 0);
 
   private isClicking = false;
 
   public shiftLeft = 0;
   public shiftTop = 0;
 
-  setHandles(engine: Engine, tilesets: Map<string, Tileset>, tilesize: number) {
+  setHandles(engine: Engine, tilesets: Map<string, Tileset>, tilesizeX: number, tilesizeY: number) {
     this.engine = engine;
     this.tilesets = tilesets;
-    this.tilesize = tilesize;
+    this.tilesizeX = tilesizeX;
+    this.tilesizeY = tilesizeY;
     this.cells = new Map<Pos, Cell>();
   }
 
@@ -67,6 +71,24 @@ export class Level {
       }
   }
 
+  drawAt(tilesetStr: string, pos: Pos, tileX: number, tileY: number, editorOuterWidth: number, editorTopHeight: number) {
+      if (this.engine == null) {
+          return;
+      }
+
+      const tileset = this.tilesets.get(tilesetStr)!;
+
+      const xx = (pos.x + this.shiftLeft) * this.tilesizeX;
+      const yy = (pos.y + this.shiftTop) * this.tilesizeY;
+
+      if (xx < 0 || xx >= this.engine.referenceWidth - editorOuterWidth
+          || yy < 0 || yy >= this.engine.referenceHeight) {
+          return;
+      }
+
+      this.engine.img(tileset, new Pos(xx + editorOuterWidth, yy + editorTopHeight), tileX, tileY);
+  }
+
   draw(editor: Editor | null) {
     let editorOuterWidth = 0;
     let editorTopHeight = 0;
@@ -81,24 +103,16 @@ export class Level {
     }
 
     for (const [pos, cell] of this.cells) {
-      const tileset = this.tilesets.get(cell.tileset)!;
-
-      const xx = (pos.x + this.shiftLeft) * this.tilesize;
-      const yy = (pos.y + this.shiftTop) * this.tilesize;
-
-      if (xx < 0 || xx >= this.engine.referenceWidth - editorOuterWidth
-       || yy < 0 || yy >= this.engine.referenceHeight) {
-        continue;
-      }
-
-      this.engine.img(tileset, new Pos(xx + editorOuterWidth, yy + editorTopHeight), cell.tileX, cell.tileY);
+      this.drawAt(cell.tileset, pos, cell.tileX, cell.tileY, editorOuterWidth, editorTopHeight);
     }
 
-    if (this.engine.mousePosX >= editorOuterWidth) {
-      const xx = this.engine.mousePosX - (this.engine.mousePosX - editorOuterWidth) % this.tilesize;
-      const yy = this.engine.mousePosY - (this.engine.mousePosY - editorTopHeight) % this.tilesize;
+    this.drawAt(this.hero.tileset, this.hero.pos, this.hero.tilesetPosX, this.hero.tilesetPosY, editorOuterWidth, editorTopHeight);
 
-      this.engine.rect(new Pos(xx, yy), this.tilesize, this.tilesize, 'rgba(55, 55, 55, 0.5)');
+    if (this.engine.mousePosX >= editorOuterWidth) {
+      const xx = this.engine.mousePosX - (this.engine.mousePosX - editorOuterWidth) % this.tilesizeX;
+      const yy = this.engine.mousePosY - (this.engine.mousePosY - editorTopHeight) % this.tilesizeY;
+
+      this.engine.rect(new Pos(xx, yy), this.tilesizeX, this.tilesizeY, 'rgba(55, 55, 55, 0.5)');
     }
   }
 
@@ -130,27 +144,35 @@ export class Level {
     const editorWidth = editor.outerWidth();
     const topBarHeight = editor.outerHeight();
 
-    const xx = Math.floor((this.engine.mousePosX - editorWidth) / this.tilesize);
-    const yy = Math.floor((this.engine.mousePosY - topBarHeight) / this.tilesize);
+    const xx = Math.floor((this.engine.mousePosX - editorWidth) / this.tilesizeX);
+    const yy = Math.floor((this.engine.mousePosY - topBarHeight) / this.tilesizeY);
 
-    const horizTiles = (this.engine.referenceWidth - editorWidth) / this.tilesize;
-    const vertTiles = (this.engine.referenceHeight - topBarHeight) / this.tilesize;
+    const horizTiles = (this.engine.referenceWidth - editorWidth) / this.tilesizeX;
+    const vertTiles = (this.engine.referenceHeight - topBarHeight) / this.tilesizeY;
 
     if (xx >= 0 && yy >= 0 && xx < horizTiles && yy < vertTiles) {
         const p = new Pos(xx - this.shiftLeft, yy - this.shiftTop);
-        const [pos, cell] = this.findCellAtPos(p);
 
-        if (!this.engine.isRightClick) {
-            if (pos === undefined || cell === undefined) {
-                this.cells.set(p, {tileset: editor.currentMenu, tileX: editor.currentTileIndexX, tileY: editor.currentTileIndexY});
-            } else {
-                cell.tileset = editor.currentMenu;
-                cell.tileX = editor.currentTileIndexX;
-                cell.tileY = editor.currentTileIndexY;
+        if (editor.currentMenu === this.hero.tileset
+            && editor.currentTileIndexX === this.hero.tilesetPosX
+            && editor.currentTileIndexY === this.hero.tilesetPosY) {
+            this.hero.pos = p;
+        } else {
+            const [pos, cell] = this.findCellAtPos(p);
+
+            if (!this.engine.isRightClick) {
+                if (pos === undefined || cell === undefined) {
+                    this.cells.set(p, {tileset: editor.currentMenu, tileX: editor.currentTileIndexX, tileY: editor.currentTileIndexY});
+                } else {
+                    cell.tileset = editor.currentMenu;
+                    cell.tileX = editor.currentTileIndexX;
+                    cell.tileY = editor.currentTileIndexY;
+                }
+            } else if (pos !== undefined) {
+                this.cells.delete(pos);
             }
-        } else if (pos !== undefined) {
-            this.cells.delete(pos);
         }
+
     }
   }
 

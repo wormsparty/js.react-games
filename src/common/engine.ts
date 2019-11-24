@@ -86,13 +86,13 @@ export class Engine {
 
     this.graphics.resize(zoom, borderx + ajustementx, borderx, bordery + ajustementy, bordery, width, height);
   }
-  constructor(canvasId: string, width: number, height: number, fontSize: number, fontFamily: string, integerZoom: boolean, tilesize: number) {
+  constructor(canvasId: string, width: number, height: number, fontSize: number, fontFamily: string, integerZoom: boolean, tilesizeX: number, tilesizeY: number) {
     this.canvas = document.getElementById(canvasId) as HTMLCanvasElement;
     this.canvas.oncontextmenu = function() {
         return false;
     };
 
-    this.graphics = new Canvas2D(this.canvas, width, height, fontSize, fontFamily, tilesize);
+    this.graphics = new Canvas2D(this.canvas, width, height, fontSize, fontFamily, tilesizeX, tilesizeY);
     /*this.audio = new WebAudio();
 
     if (!this.audio) {

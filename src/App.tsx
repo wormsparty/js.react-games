@@ -20,7 +20,7 @@ const buttonStyle: CSSProperties = {
 };
 
 export default class App extends React.Component<AppProps, AppState> {
-    static defaultProps: AppState = { view: "Rogue" };
+    static defaultProps: AppState = { view: "MapEdit" };
 
     constructor(props: AppProps) {
         super(props);

@@ -7,7 +7,8 @@ import {KeyPress} from "../common/keypress";
 
 export class Game {
   public pressed: Map<string, KeyPress>;
-  public tilesize = 16;
+  public tilesizeX = 14;
+  public tilesizeY = 23;
 
   public readonly engine: Engine;
   private readonly textureLoader: TextureLoader;
@@ -19,8 +20,8 @@ export class Game {
   fps: number;
 
   constructor(enableEditor: boolean) {
-    let width = 512;
-    let height = 448;
+    let width = 960;
+    let height = 720;
 
     if (enableEditor) {
       this.editor = new Editor();
@@ -39,13 +40,18 @@ export class Game {
       6,
       'wonder',
       true,
-      this.tilesize);
+      this.tilesizeX,
+      this.tilesizeY);
 
     this.pressed = new Map();
     this.pressed.set('ArrowUp', {pressed: false, prevPressed: false});
     this.pressed.set('ArrowDown', {pressed: false, prevPressed: false});
     this.pressed.set('ArrowLeft', {pressed: false, prevPressed: false});
     this.pressed.set('ArrowRight', {pressed: false, prevPressed: false});
+    this.pressed.set('w', {pressed: false, prevPressed: false});
+    this.pressed.set('a', {pressed: false, prevPressed: false});
+    this.pressed.set('s', {pressed: false, prevPressed: false});
+    this.pressed.set('d', {pressed: false, prevPressed: false});
 
     this.textureLoader = new TextureLoader();
     this.fps = 30;
@@ -59,14 +65,14 @@ export class Game {
     this.textureLoader.setLoadedFunction(allTilesetsLoaded);
 
     this.tilesets.set('terrain', new Tileset(process.env.PUBLIC_URL + '/terrain.png', this.textureLoader));
-    this.tilesets.set('personnages', new Tileset(process.env.PUBLIC_URL + '/personnages.png', this.textureLoader));
-    this.tilesets.set('objets', new Tileset(process.env.PUBLIC_URL + '/objets.png', this.textureLoader));
+    //this.tilesets.set('personnages', new Tileset(process.env.PUBLIC_URL + '/personnages.png', this.textureLoader));
+    //this.tilesets.set('objets', new Tileset(process.env.PUBLIC_URL + '/objets.png', this.textureLoader));
 
     if (this.editor != null) {
-      this.editor.setHandles(this.engine, this.tilesets, this.tilesize);
+      this.editor.setHandles(this.engine, this.tilesets, this.tilesizeX, this.tilesizeY);
     }
 
-    this.level.setHandles(this.engine, this.tilesets, this.tilesize);
+    this.level.setHandles(this.engine, this.tilesets, this.tilesizeX, this.tilesizeY);
     this.textureLoader.waitLoaded();
   }
 
@@ -78,7 +84,7 @@ export class Game {
   }
 
   draw(): void {
-    this.engine.clear('#888888');
+    this.engine.clear('#000000');
 
     if (!this.textureLoader.isInitialized) {
       this.engine.textCentered('Loading...', 40, '#FFFFFF');
@@ -119,6 +125,18 @@ export class Game {
       this.level.shiftLeft--;
       key.prevPressed = key.pressed;
     }
+
+    key = this.pressed.get('w')!;
+    this.level.hero.pos.y += key.pressed ? -1 : 0;
+
+    key = this.pressed.get('a')!;
+    this.level.hero.pos.x += key.pressed ? -1 : 0;
+
+    key = this.pressed.get('s')!;
+    this.level.hero.pos.y += key.pressed ? 1 : 0;
+
+    key = this.pressed.get('d')!;
+    this.level.hero.pos.x += key.pressed ? 1 : 0;
 
     this.level.update(this.editor);
   }

@@ -4,7 +4,8 @@ import {KeyPress} from "../common/keypress";
 
 export class Labyrinth {
     public pressed: Map<string, KeyPress>;
-    public tilesize = 16;
+    public tilesizeX = 16;
+    public tilesizeY = 16;
 
     public readonly engine: Engine;
     private readonly textureLoader: TextureLoader;
@@ -22,7 +23,8 @@ export class Labyrinth {
             6,
             'wonder',
             true,
-            this.tilesize);
+            this.tilesizeX,
+            this.tilesizeY);
 
         this.pressed = new Map();
         this.pressed.set('ArrowUp', {pressed: false, prevPressed: false});
