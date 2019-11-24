@@ -5,33 +5,39 @@ import {Pos} from "../common/pos";
 import {Hero} from "./hero";
 
 class Cell {
-  public tileset: string;
+  public tileset: number;
   public tileX: number;
   public tileY: number;
 
-  constructor(tileset: string, tileX: number, tileY: number) {
+  constructor(tileset: number, tileX: number, tileY: number) {
     this.tileset = tileset;
     this.tileX = tileX;
     this.tileY = tileY;
   }
 }
 
+enum TileSetType {
+    Terrain = 0,
+    Objets = 1,
+    Teleporteurs = 2,
+}
+
 export class Level {
   private engine: Engine | null = null;
 
-  private tilesets: Map<string, Tileset> = new Map<string, Tileset>();
+  private tilesets: Tileset[] = new Array<Tileset>();
   public tilesizeX: number = 0;
   public tilesizeY: number = 0;
 
   public cells: Map<Pos, Cell> = new Map<Pos, Cell>();
-  public hero: Hero = new Hero('terrain', 0, 0);
+  public hero: Hero = new Hero(TileSetType.Objets, 0, 0);
 
   private isClicking = false;
 
   public shiftLeft = 0;
   public shiftTop = 0;
 
-  setHandles(engine: Engine, tilesets: Map<string, Tileset>, tilesizeX: number, tilesizeY: number) {
+  setHandles(engine: Engine, tilesets: Array<Tileset>, tilesizeX: number, tilesizeY: number) {
     this.engine = engine;
     this.tilesets = tilesets;
     this.tilesizeX = tilesizeX;
@@ -71,12 +77,12 @@ export class Level {
       }
   }
 
-  drawAt(tilesetStr: string, pos: Pos, tileX: number, tileY: number, editorOuterWidth: number, editorTopHeight: number) {
+  drawAt(tilesetNb: number, pos: Pos, tileX: number, tileY: number, editorOuterWidth: number, editorTopHeight: number) {
       if (this.engine == null) {
           return;
       }
 
-      const tileset = this.tilesets.get(tilesetStr)!;
+      const tileset = this.tilesets[tilesetNb];
 
       const xx = (pos.x + this.shiftLeft) * this.tilesizeX;
       const yy = (pos.y + this.shiftTop) * this.tilesizeY;

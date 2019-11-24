@@ -5,7 +5,7 @@ import {Pos} from "../common/pos";
 export class Editor {
   public currentTileIndexX = 0;
   public currentTileIndexY = 0;
-  public currentMenu = 'terrain';
+  public currentMenu = 0;
   public doExport: boolean = false;
 
   private readonly leftPanelWidth = 112;
@@ -13,11 +13,11 @@ export class Editor {
   private readonly margin = 6;
 
   private engine: Engine | null = null;
-  private tilesets: Map<string, Tileset> = new Map<string, Tileset>();
+  private tilesets: Tileset[] = new Array<Tileset>();
   private tilesizeX: number = 0;
   private tilesizeY: number = 0;
 
-  setHandles(engine: Engine, tilesets: Map<string, Tileset>, tilesizeX: number, tilesizeY: number) {
+  setHandles(engine: Engine, tilesets: Array<Tileset>, tilesizeX: number, tilesizeY: number) {
     this.engine = engine;
     this.tilesets = tilesets;
     this.tilesizeX = tilesizeX;
@@ -29,13 +29,14 @@ export class Editor {
   outerHeight() {
     return this.topBarHeight + this.margin;
   }
+
   draw() {
     if (this.engine == null) {
       return;
     }
 
     this.engine.rect(new Pos(0, 0), this.outerWidth(), this.engine.referenceHeight, '#AAA');
-    const tileset = this.tilesets.get(this.currentMenu)!;
+    const tileset = this.tilesets[this.currentMenu];
 
     const width = tileset.image.width;
     const height = tileset.image.height;
@@ -62,44 +63,25 @@ export class Editor {
     this.engine.rect(new Pos(this.leftPanelWidth, 0), this.margin, this.engine.referenceHeight, '#000000');
 
     this.engine.text('export', new Pos(4, 6), '#000');
-
-    this.renderMenu('terrain', '', 4);
-    //this.renderMenu('personnages', 'pers.', 37);
-    //this.renderMenu('objets', 'objets', 68);
-  }
-
-  renderMenu(name: string, str: string, posX: number) {
-    const menuH = 16;
-
-    if (this.currentMenu === name) {
-      this.engine!.text(str, new Pos(posX, menuH), '#FFF');
-    } else {
-      this.engine!.text(str, new Pos(posX, menuH), '#000');
-    }
+    this.engine.text('layer: ' + this.currentMenu, new Pos(4, 16), '#000');
   }
 
   onClick(): boolean {
     if (this.engine != null && this.engine.mousePosX < this.leftPanelWidth && this.engine.mousePosX >= 0 && this.engine.mousePosY >= 0 && this.engine.mousePosY < this.engine.referenceHeight) {
-      const tileset = this.tilesets.get(this.currentMenu)!;
-
       if (this.engine.mousePosY < this.outerHeight()) {
         if (this.engine.mousePosY < 12) {
           if (this.engine.mousePosX < 46) {
             this.doExport = true;
           }
         } else {
-          if (this.engine.mousePosX < 36) {
-            this.currentMenu = 'terrain';
-          } /*else if (this.engine.mousePosX < 68) {
-            this.currentMenu = 'personnages';
-          } else {
-            this.currentMenu = 'objets';
-          }*/
+          this.currentMenu = (this.currentMenu + 1) % this.tilesets.length;
         }
       }
       else {
         const xx = Math.floor(this.engine.mousePosX / this.tilesizeX);
         const yy = Math.floor((this.engine.mousePosY - this.outerHeight()) / this.tilesizeY);
+
+        const tileset = this.tilesets[this.currentMenu];
 
         const horizTiles = tileset.image.width / this.tilesizeX;
         const vertTiles = tileset.image.height / this.tilesizeY;
