@@ -44,10 +44,10 @@ export class Game {
       this.tilesizeY);
 
     this.pressed = new Map();
-    this.pressed.set('ArrowUp', {pressed: false, prevPressed: false});
-    this.pressed.set('ArrowDown', {pressed: false, prevPressed: false});
-    this.pressed.set('ArrowLeft', {pressed: false, prevPressed: false});
-    this.pressed.set('ArrowRight', {pressed: false, prevPressed: false});
+    //this.pressed.set('ArrowUp', {pressed: false, prevPressed: false});
+    //this.pressed.set('ArrowDown', {pressed: false, prevPressed: false});
+    //this.pressed.set('ArrowLeft', {pressed: false, prevPressed: false});
+    //this.pressed.set('ArrowRight', {pressed: false, prevPressed: false});
     this.pressed.set('w', {pressed: false, prevPressed: false});
     this.pressed.set('a', {pressed: false, prevPressed: false});
     this.pressed.set('s', {pressed: false, prevPressed: false});
@@ -98,7 +98,7 @@ export class Game {
   }
 
   doUpdate(): void {
-    let key = this.pressed.get('ArrowUp')!;
+    /*let key = this.pressed.get('ArrowUp')!;
 
     if (key.pressed && !key.prevPressed) {
       this.level.shiftTop++;
@@ -124,9 +124,9 @@ export class Game {
     if (key.pressed && !key.prevPressed) {
       this.level.shiftLeft--;
       key.prevPressed = key.pressed;
-    }
+    }*/
 
-    key = this.pressed.get('w')!;
+    let key = this.pressed.get('w')!;
     this.level.hero.pos.y += key.pressed ? -1 : 0;
 
     key = this.pressed.get('a')!;
