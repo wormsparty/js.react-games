@@ -126,17 +126,38 @@ export class Game {
       key.prevPressed = key.pressed;
     }*/
 
-    let key = this.pressed.get('w')!;
-    this.level.hero.pos.y += key.pressed ? -1 : 0;
+    const movingSpeed = 0.25;
 
-    key = this.pressed.get('a')!;
-    this.level.hero.pos.x += key.pressed ? -1 : 0;
+    const keyW = this.pressed.get('w')!;
+    const keyS = this.pressed.get('s')!;
+    const keyA = this.pressed.get('a')!;
+    const keyD = this.pressed.get('d')!;
 
-    key = this.pressed.get('s')!;
-    this.level.hero.pos.y += key.pressed ? 1 : 0;
+    if (!keyW.pressed && !keyS.pressed && !keyA.pressed && !keyD.pressed) {
+      this.level.hero.timer = 0;
+    } else if (keyW.pressed || keyS.pressed || keyA.pressed || keyD.pressed) {
+      this.level.hero.timer += movingSpeed;
+    }
 
-    key = this.pressed.get('d')!;
-    this.level.hero.pos.x += key.pressed ? 1 : 0;
+    if (this.level.hero.timer >= 1) {
+      if (keyW.pressed && !keyS.pressed) {
+        this.level.hero.pos.y -= 1;
+      }
+
+      if (keyS.pressed && !keyW.pressed) {
+        this.level.hero.pos.y += 1;
+      }
+
+      if (keyD.pressed && !keyA.pressed) {
+        this.level.hero.pos.x += 1;
+      }
+
+      if (keyA.pressed && !keyD.pressed) {
+        this.level.hero.pos.x -= 1;
+      }
+
+      this.level.hero.timer -= 1;
+    }
 
     this.level.update(this.editor);
   }
