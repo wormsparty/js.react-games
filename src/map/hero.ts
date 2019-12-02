@@ -2,6 +2,8 @@ import {Pos} from "../common/pos";
 
 export class Hero {
     public pos: Pos = new Pos(0, 0);
+    public nextPos: Pos = new Pos(0, 0);
+
     public timer: number = 0;
 
     public tileset: number;

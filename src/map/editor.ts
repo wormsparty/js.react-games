@@ -65,7 +65,7 @@ export class Editor {
     this.engine.rect(new Pos(this.leftPanelWidth, 0), this.margin, this.engine.referenceHeight, '#000000');
 
     this.engine.text('export', new Pos(4, 6), '#000');
-    this.engine.text('layer: ' + this.currentMenu, new Pos(4, 16), '#000');
+    this.engine.text('layer: ' + this.tilesets[this.currentMenu].name, new Pos(4, 16), '#000');
   }
 
   onClick(): boolean {

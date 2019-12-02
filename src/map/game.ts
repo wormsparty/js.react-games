@@ -64,9 +64,10 @@ export class Game {
 
     this.textureLoader.setLoadedFunction(allTilesetsLoaded);
 
-    this.tilesets.push(new Tileset(process.env.PUBLIC_URL + '/terrain.png', this.textureLoader));
-    this.tilesets.push(new Tileset(process.env.PUBLIC_URL + '/objets.png', this.textureLoader));
-    this.tilesets.push(new Tileset(process.env.PUBLIC_URL + '/teleporteurs.png', this.textureLoader));
+    this.tilesets.push(new Tileset(process.env.PUBLIC_URL + '/terrain.png', this.textureLoader, 'terrain'));
+    this.tilesets.push(new Tileset(process.env.PUBLIC_URL + '/objets.png', this.textureLoader, 'objets'));
+    this.tilesets.push(new Tileset(process.env.PUBLIC_URL + '/teleporteurs.png', this.textureLoader, 'teleporteurs'));
+    this.tilesets.push(new Tileset(process.env.PUBLIC_URL + '/shop.png', this.textureLoader, 'shop'));
 
     if (this.editor != null) {
       this.editor.setHandles(this.engine, this.tilesets, this.tilesizeX, this.tilesizeY);
@@ -139,24 +140,27 @@ export class Game {
       this.level.hero.timer += movingSpeed;
     }
 
+    const nextPos = this.level.hero.pos.copy();
+
     if (this.level.hero.timer >= 1) {
       if (keyW.pressed && !keyS.pressed) {
-        this.level.hero.pos.y -= 1;
+        nextPos.y -= 1;
       }
 
       if (keyS.pressed && !keyW.pressed) {
-        this.level.hero.pos.y += 1;
+        nextPos.y += 1;
       }
 
       if (keyD.pressed && !keyA.pressed) {
-        this.level.hero.pos.x += 1;
+        nextPos.x += 1;
       }
 
       if (keyA.pressed && !keyD.pressed) {
-        this.level.hero.pos.x -= 1;
+        nextPos.x -= 1;
       }
 
       this.level.hero.timer -= 1;
+      this.level.hero.nextPos = nextPos;
     }
 
     this.level.update(this.editor);
@@ -188,7 +192,6 @@ export class Game {
 
 
   import(data: string) {
-    // TODO
-    //this.level.import(data);
+    this.level.import(data);
   }
 }
