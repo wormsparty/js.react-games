@@ -30,7 +30,7 @@ export class Editor {
   }
 
   outerHeight() {
-    return this.topBarHeight + this.margin + 10;
+    return this.topBarHeight + this.margin + 15;
   }
 
   draw() {
@@ -66,21 +66,21 @@ export class Editor {
     this.engine.rect(new Pos(this.leftPanelWidth, 0), this.margin, this.engine.referenceHeight, '#000000');
 
     if (this.engine.mousePosY < 16 && this.engine.mousePosX >= 0 && this.engine.mousePosX < this.outerWidth()) {
-      this.engine.text('export', new Pos(4, 6), '#000');
+      this.engine.text('Export', new Pos(4, 6), '#000');
     } else {
-      this.engine.text('export', new Pos(4, 6), '#333');
+      this.engine.text('Export', new Pos(4, 6), '#333');
     }
 
     if (this.engine.mousePosY >= 16 && this.engine.mousePosY < 26 && this.engine.mousePosX >= 0 && this.engine.mousePosX < this.outerWidth()) {
-      this.engine.text('layer: ' + this.tilesets[this.currentMenu].name, new Pos(4, 16), '#000');
+      this.engine.text('Layer: ' + this.tilesets[this.currentMenu].name, new Pos(4, 16), '#000');
     } else {
-      this.engine.text('layer: ' + this.tilesets[this.currentMenu].name, new Pos(4, 16), '#333');
+      this.engine.text('Layer: ' + this.tilesets[this.currentMenu].name, new Pos(4, 16), '#333');
     }
 
     if (this.engine.mousePosY >= 26 && this.engine.mousePosY < this.outerHeight() && this.engine.mousePosX >= 0 && this.engine.mousePosX < this.outerWidth()) {
-      this.engine.text('map: ' + this.currentMap, new Pos(4, 26), '#000');
+      this.engine.text('Map: ' + this.currentMap, new Pos(4, 26), '#000');
     } else {
-      this.engine.text('map: ' + this.currentMap, new Pos(4, 26), '#333');
+      this.engine.text('Map: ' + this.currentMap, new Pos(4, 26), '#333');
     }
   }
 

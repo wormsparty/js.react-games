@@ -1,3 +1,4 @@
+@import url('https://fonts.googleapis.com/css?family=Inconsolata&display=swap');
 
 body, input[text], button {
   color: #888;
@@ -59,9 +60,4 @@ app-root {
   width: 100%;
   left: 0;
   top: 0;
-}
-
-@font-face {
-  font-family: "wonder";
-  src: url("/8-BIT WONDER.TTF")
 }

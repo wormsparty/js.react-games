@@ -37,8 +37,8 @@ export class Game {
       'canvas',
       width,
       height,
-      6,
-      'wonder',
+      11,
+      'Inconsolata',
       true,
       this.tilesizeX,
       this.tilesizeY);
