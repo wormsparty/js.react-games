@@ -2,7 +2,6 @@ import React, {CSSProperties} from 'react';
 import './App.css';
 import Rogue from "./rogue/Rogue";
 import MapEdit from "./map/MapEdit";
-import Pixie from "./pixie/Pixie";
 
 interface AppProps {
 }
@@ -21,7 +20,7 @@ const buttonStyle: CSSProperties = {
 };
 
 export default class App extends React.Component<AppProps, AppState> {
-    static defaultProps: AppState = { view: "Pixie" };
+    static defaultProps: AppState = { view: "MapEdit" };
 
     constructor(props: AppProps) {
         super(props);
@@ -36,10 +35,6 @@ export default class App extends React.Component<AppProps, AppState> {
         this.setState({ view: "MapEdit" });
     };
 
-    switchToPixie = () => {
-        this.setState({ view: "Pixie" });
-    };
-
     render() {
         return (
             <div>
@@ -52,13 +47,9 @@ export default class App extends React.Component<AppProps, AppState> {
                         👩‍🎨
                     </span>
                     <br/>
-                    <span role={'img'} aria-label={'Switch to Pixie'} onClick={this.switchToPixie}>
-                        🧚
-                    </span>
                 </div>
                 {(this.state.view === "Rogue") && <Rogue />}
                 {(this.state.view === "MapEdit") && <MapEdit />}
-                {(this.state.view === "Pixie") && <Pixie />}
             </div>
         );
     }
