@@ -183,14 +183,32 @@ export class Level {
   tryMove(nextPos: Pos, hero: Hero): boolean {
       const nextPosIndex = this.getCharAt(nextPos, TileSetType.Terrain);
 
+      //
+      // 1) Check if we can walk on the new tile.
+      //    This is defined if there is a DOT in the Train layer
+      //
+
       // 0|0  -> wall
       // 1|0  -> dot
       // 2|0  -> water
       if (nextPosIndex === "1|0") {
           hero.pos = nextPos;
+
+          //
+          // 2) If we can walk there first check if there is a teleporter on this tile.
+          //    If there is, move to the other side of the teleporter instead.
+          //
+          // TODO;
+
           return true;
       }
 
+
+      //
+      // This is a special case: if we move diagonally and fail, try the same method
+      // but with only one of the two directions, and then only the other.
+      // Moving up/down wins over left/right.
+      //
       const movingDiagonnaly = hero.pos.x !== nextPos.x && hero.pos.y !== nextPos.y;
 
       if (movingDiagonnaly) {
