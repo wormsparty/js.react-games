@@ -46,7 +46,7 @@ class Rogue extends React.Component<RogueProps> {
         this.labyrinth.resize(window.innerWidth, window.innerHeight);
     };
 
-    onKeydown = (event: KeyboardEvent) => {
+    onKeydown = (_: KeyboardEvent) => {
         if (this.labyrinth == null) {
             return;
         }

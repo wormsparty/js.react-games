@@ -1,4 +1,4 @@
-﻿import {Engine} from '../common/engine';
+import {Engine} from '../common/engine';
 import {Tileset} from './tileset';
 import {TextureLoader} from './textureloader';
 import {Level} from './level';
