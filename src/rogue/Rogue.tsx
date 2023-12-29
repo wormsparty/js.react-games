@@ -1,7 +1,5 @@
 // @ts-ignore
 import * as React from 'react';
-// @ts-ignore
-import * as FontFaceObserver from 'fontfaceobserver';
 
 import { Labyrinth } from './labyrinth';
 
@@ -22,9 +20,10 @@ class Rogue extends React.Component<RogueProps> {
         window.addEventListener('resize', this.onResize);
         window.addEventListener('keydown', this.onKeydown);
 
-        const font = new FontFaceObserver('Inconsolata');
+        const font = new FontFace('Inconsolata', `url(${process.env.PUBLIC_URL}/Inconsolata.ttf)`);
 
-        font.load().then(() => {
+        font.load().then((font) => {
+	    document.fonts.add(font);
             labyrinth.draw();
         });
     }
