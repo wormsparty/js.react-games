@@ -648,7 +648,7 @@ export class Labyrinth {
       newMapName,
     ];
   }
-  try_hit_target(heroPos: Pos, aimPos: Pos): [string, string] {
+  try_hit_target(_: Pos, aimPos: Pos): [string, string] {
     if (this.currentMap == null || this.currentMapData.spawner == null || this.currentMap.targetSpawner === null) {
       return [ '', '' ];
     }

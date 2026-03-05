@@ -361,7 +361,7 @@ const spike = new LevelMap('' +
     state.targets.push(new Target(new Pos(23 + n, -1), 'v', 1, 1));
   }, (): Pos => {
     return new Pos(0, 1);
-  }, (pv: number): string => {
+  }, (_: number): string => {
     return '#00FF00';
   }),
   null,
@@ -438,7 +438,7 @@ const spike2 = new LevelMap('' +
     state.targets.push(new Target(new Pos(22 + n, -1), 'v', 1, 1));
   }, (): Pos => {
     return new Pos(0, 1);
-  }, (pv: number): string => {
+  }, (_: number): string => {
     return '#00FF00';
   }),
   null,
@@ -577,10 +577,10 @@ const leaveRock = new LevelMap('' +
     }
   }, (): Pos => {
     return new Pos(0, 0);
-  }, (pv: number): string => {
+  }, (_: number): string => {
     return '#00FF00';
   }),
-  (l: Labyrinth, symbol: string): boolean => {
+  (l: Labyrinth, _: string): boolean => {
     if (l.currentMapData.spawner != null) {
       return l.currentMapData.spawner.targets.length !== 0 && l.persistedData.coins !== 1090;
     }
@@ -659,7 +659,7 @@ const swordOnly = new LevelMap('' +
     } else {
       return new Pos(1, 0);
     }
-  }, (pv: number): string => {
+  }, (_: number): string => {
     return '#00FFFF';
   }),
   null,
@@ -729,9 +729,9 @@ const rotating = new LevelMap('' +
       state.targets.push(new Target(new Pos(56, 9 + state.tick), '<', 1, 1));
     }
     state.tick = (state.tick + 1) % 3;
-  }, (symbol: string): Pos => {
+  }, (_: string): Pos => {
     return new Pos(-1, 0);
-  }, (pv: number): string => {
+  }, (_: number): string => {
     return '#00FFFF';
   }),
   null,
@@ -864,7 +864,7 @@ const hitSword = new LevelMap('' +
     }
 
     state.tick = (state.tick + 1) % 3;
-  }, (symbol: string): Pos => {
+  }, (_: string): Pos => {
     return new Pos(0, 1);
   }, (pv: number): string => {
     if (pv === 3) {
@@ -959,9 +959,9 @@ const lastChallenge = new LevelMap('' +
     state.targets.push(new Target(new Pos(-1, 13 + (state.tick % 2)), '>', 1, 1));
 
     state.tick = (state.tick + 1) % 8;
-  }, (symbol: string): Pos => {
+  }, (_: string): Pos => {
     return new Pos(1, 0);
-  }, (pv: number): string => {
+  }, (_: number): string => {
     return '#00FFFF';
   }),
   null,

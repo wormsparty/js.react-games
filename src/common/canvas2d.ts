@@ -7,7 +7,7 @@ export class Canvas2D {
   private readonly referenceHeight: number;
   private readonly fontSize: number;
   private readonly font: string;
-  private readonly fontFamily: string;
+  //private readonly fontFamily: string;
   private windowWidth: number;
   private windowHeight: number;
   public marginLeft: number;
@@ -29,7 +29,7 @@ export class Canvas2D {
     this.referenceWidth = referenceWidth;
     this.referenceHeight = referenceHeight;
     this.fontSize = fontSize;
-    this.fontFamily = fontFamily;
+    //this.fontFamily = fontFamily;
     this.font = fontSize + 'px ' + fontFamily;
     this.tilesize = tilesize;
   }
